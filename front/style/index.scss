@@ -1,0 +1,20 @@
+@charset 'UTF-8';
+@import "breakpoints";
+@import "fonts";
+@import "style";
+
+#game-wrapper {
+    position: relative;
+    canvas {
+        display: block;
+        background-color: orange;
+        // do not use border, it will make scroll effect appear
+        // border: 5px solid cyan;
+    }
+}
+#app {
+    // border: 5px solid red;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}

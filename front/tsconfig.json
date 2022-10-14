@@ -4,8 +4,6 @@
     "extends": "@tsconfig/svelte/tsconfig.json",
     "compilerOptions": {
       "outDir": "./dist/",
-      // "rootDirs": ["./src/"],
-      "rootDir": "./",
       "sourceMap": true,
       "moduleResolution": "node",
       //"module": "CommonJS",
@@ -28,13 +26,11 @@
       "noImplicitThis": true,                /* Raise error on 'this' expressions with an implied 'any' type. */
       "alwaysStrict": true,                  /* Parse in strict mode and emit "use strict" for each source file. */
 
+      "preserveValueImports": true,
+      "isolatedModules": true,
+
       "noImplicitReturns": true,             /* Report error when not all code paths in function return a value. */
       "noFallthroughCasesInSwitch": true,     /* Report errors for fallthrough cases in switch statement. */
-
-      // "preserveValueImports": true,
-      // "isolatedModules": true,
-      "isolatedModules": true,
-      "preserveValueImports": true,
       "paths": {
         "@wa-preload-app": ["../desktop/electron/src/preload-app/types.ts"],
       }
