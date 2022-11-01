@@ -1,11 +1,6 @@
 <script lang="ts">
-    import { Game } from "phaser";
-    import {
-        SelectMapSceneName,
-        type MapType,
-    } from "../../Phaser/Game/GameManager";
-    import { EntryScene, EntrySceneName } from "../../Phaser/Scene/EntryScene";
-    import { SelectMapScene } from "../../Phaser/Scene/SelectMapScene";
+    import { gameManager } from "../../Phaser/Game/GameManager";
+    import { VowelSoundsGameSceneName } from "../../Phaser/Scene/GameScene/Speaking/VowelSoundsGameScene";
     import { loginVisibilityStore } from "../../Stores/LoginVisibilityStore";
 
     function login() {
@@ -16,12 +11,7 @@
     export let game: Phaser.Game;
 
     function startTheGame() {
-        const entryScene = game.scene.getScene(EntrySceneName) as EntryScene;
-        if (entryScene) {
-            entryScene.startTheGame();
-        } else {
-            console.error("CAN'T NOT GET THE ENTRY SCENE");
-        }
+        gameManager.startScene(VowelSoundsGameSceneName);
     }
 </script>
 

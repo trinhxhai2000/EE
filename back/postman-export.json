@@ -1,0 +1,247 @@
+{
+	"info": {
+		"_postman_id": "22fa7e06-b00b-48a6-8b5e-b94e202101a2",
+		"name": "practise-project",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "15239540"
+	},
+	"item": [
+		{
+			"name": "Login request",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\":\"trinhxhai@gmail.com\",\n    \"password\":\"123456\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://nodejs-ts-txhai12.herokuapp.com/api/v1/login",
+					"protocol": "https",
+					"host": [
+						"nodejs-ts-txhai12",
+						"herokuapp",
+						"com"
+					],
+					"path": [
+						"api",
+						"v1",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Register request",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\":\"trinhxhai\",\n    \"password\":\"123456\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://nodejs-ts-txhai12.herokuapp.com/api/v1/register",
+					"protocol": "https",
+					"host": [
+						"nodejs-ts-txhai12",
+						"herokuapp",
+						"com"
+					],
+					"path": [
+						"api",
+						"v1",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Tasks",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRyaW5oeGhhaUBnbWFpbC5jb20iLCJpYXQiOjE2NTMwNDEzNjQsImV4cCI6MTY1NTYzMzM2NH0.t23h0wvIAwrV9-F624YbUP34R0ROQtVlrluYHJW5OGM",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://nodejs-ts-txhai12.herokuapp.com/api/v1/tasks?name=&fields=name,content,completed&limit=5",
+					"protocol": "https",
+					"host": [
+						"nodejs-ts-txhai12",
+						"herokuapp",
+						"com"
+					],
+					"path": [
+						"api",
+						"v1",
+						"tasks"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": ""
+						},
+						{
+							"key": "fields",
+							"value": "name,content,completed"
+						},
+						{
+							"key": "limit",
+							"value": "5"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Task",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRyaW5oeGhhaUBnbWFpbC5jb20iLCJpYXQiOjE2NTMwNDE4ODcsImV4cCI6MTY1NTYzMzg4N30.vcn9W4VTDLLrMJkyUrQ4Nv5_qcRJfA0L9S9JoHWAKDA",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\":\"Plank\",\n    \"content\":\"Plank 5m\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://nodejs-ts-txhai12.herokuapp.com/api/v1\n/tasks",
+					"protocol": "https",
+					"host": [
+						"nodejs-ts-txhai12",
+						"herokuapp",
+						"com"
+					],
+					"path": [
+						"api",
+						"v1\n",
+						"tasks"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update tasks",
+			"request": {
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRyaW5oeGhhaUBnbWFpbC5jb20iLCJpYXQiOjE2NTMwNDE4ODcsImV4cCI6MTY1NTYzMzg4N30.vcn9W4VTDLLrMJkyUrQ4Nv5_qcRJfA0L9S9JoHWAKDA",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\":\"gập bụng\",\n    \"content\":\"gập bụng 20 cái\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://nodejs-ts-txhai12.herokuapp.com/api/v1/tasks/62876e2f9bd6982629ccc9ba",
+					"protocol": "https",
+					"host": [
+						"nodejs-ts-txhai12",
+						"herokuapp",
+						"com"
+					],
+					"path": [
+						"api",
+						"v1",
+						"tasks",
+						"62876e2f9bd6982629ccc9ba"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete task",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRyaW5oeGhhaUBnbWFpbC5jb20iLCJpYXQiOjE2NTMwNDQxNzEsImV4cCI6MTY1NTYzNjE3MX0.F2gCbQB_ZTd4KqS4a30HlTaFY-EvO8vqiYZ4IHVjGXk",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://nodejs-ts-txhai12.herokuapp.com/api/v1/tasks/62877363531a95fe72b98d7f",
+					"protocol": "https",
+					"host": [
+						"nodejs-ts-txhai12",
+						"herokuapp",
+						"com"
+					],
+					"path": [
+						"api",
+						"v1",
+						"tasks",
+						"62877363531a95fe72b98d7f"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get single task",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRyaW5oeGhhaUBnbWFpbC5jb20iLCJpYXQiOjE2NTMwNDQxNzEsImV4cCI6MTY1NTYzNjE3MX0.F2gCbQB_ZTd4KqS4a30HlTaFY-EvO8vqiYZ4IHVjGXk",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://nodejs-ts-txhai12.herokuapp.com/api/v1/tasks/62876e2f9bd6982629ccc9ba",
+					"protocol": "https",
+					"host": [
+						"nodejs-ts-txhai12",
+						"herokuapp",
+						"com"
+					],
+					"path": [
+						"api",
+						"v1",
+						"tasks",
+						"62876e2f9bd6982629ccc9ba"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

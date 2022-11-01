@@ -1,0 +1,27 @@
+{
+    // YG TEAM'S CONVENTION
+    "editor.formatOnSave": true,
+
+    // PROJECT'S specific things
+    "editor.tabSize": 4,
+    "prettier.tabWidth": 4,
+    "typescript.preferences.quoteStyle": "double",
+    "javascript.preferences.quoteStyle": "double",
+    "prettier.singleQuote": false,
+    "html.completion.attributeDefaultValue": "doublequotes",
+
+    "workbench.iconTheme": "material-icon-theme",
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+    "explorer.confirmDelete": false,
+    "emmet.includeLanguages": {
+        "javascript": "javascriptreact"
+    },
+
+    // PERSONAL
+    "editor.fontFamily": "Consolas,Fira Mono,  'Courier New', monospace,Cascadia Code",
+    "workbench.colorTheme": "GitHub Dark",
+    "editor.foldingMaximumRegions": 10000,
+
+    "diffEditor.ignoreTrimWhitespace": false
+}
