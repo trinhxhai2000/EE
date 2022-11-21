@@ -55,6 +55,6 @@ const asyncRouteWrapper = function (requestHandler: RequestHandler) {
     return async (req: Request, res: Response, next: NextFunction) => {
         try {
             requestHandler(req, res, next);
-        } catch (err) {}
+        } catch (err) { }
     };
 };

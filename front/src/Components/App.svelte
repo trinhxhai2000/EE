@@ -1,32 +1,43 @@
 <script lang="ts">
     import { waitingModalStore } from "../Stores/modalStore";
-    import { loginVisibilityStore } from "../Stores/LoginVisibilityStore";
+    import {
+        loginVisibilityStore,
+        adminPageVisibilityStore,
+        registerVisibilityStore,
+    } from "../Stores/LoginVisibilityStore";
     import ConfirmModal from "./Modal/ConfirmModal.svelte";
     import InfoModal from "./Modal/InfoModal.svelte";
     import WaitingModal from "./Modal/WaitingModal.svelte";
     import Login from "./Login/Login.svelte";
     import Main from "./Main/Main.svelte";
-
+    import Register from "./Register/Register.svelte";
+    import AdminPage from "./Admin/AdminPage.svelte";
+    import { currentComponentModalStore } from "../Stores/ComponentModal";
+    import ModalPlaceHolder from "./Modal/ModalPlaceHolder.svelte";
     export let game: Phaser.Game | undefined;
 </script>
 
 <div class="main">
     <ConfirmModal />
     <InfoModal />
+
+    {#if $currentComponentModalStore != null}
+        <ModalPlaceHolder />
+    {/if}
+
     {#if $waitingModalStore.length > 0}
         <WaitingModal />
         <!-- {:else if $}
     <ConfirmModal />
      -->
     {:else if $loginVisibilityStore}
-        {#if game !== undefined}
-            <Login {game} />
-        {:else}
-            <h2 style="color:red;font-weight:bold;">
-                Game instance is undefined
-            </h2>
-        {/if}
+        <Login />
+    {:else if $registerVisibilityStore}
+        <Register />
+    {:else if $adminPageVisibilityStore}
+        <AdminPage />
     {:else}
+        <!-- Game layout -->
         <Main />
     {/if}
 </div>

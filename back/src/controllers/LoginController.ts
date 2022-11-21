@@ -14,18 +14,48 @@ import { userRepositoryController } from "../db/repository/UserRepository";
 export class LoginController {
     // add require req.body: username, password
     @asyncWrapper(true)
-    @get("/login")
+    @post("/login")
     async login(req: Request, res: Response) {
-        const { username } = req.body;
-        console.log("login", { username });
+        const { username, password } = req.body;
+        console.log("login", { username, password });
 
         try {
             const user = await userRepositoryController.getUser(username);
-            // user = null ?
-            res.status(StatusCodes.OK).json({
-                success: true,
-                data: user,
-            });
+
+            const isMatchPassword = await userRepositoryController.checkPassword(password, user.hashPassword);
+
+            console.log("login", { hashPass: user.hashPassword, password, isMatchPassword })
+            if (isMatchPassword) {
+                // user = null ?
+                console.log("fuck ?", { x: process.env.JWT_SECRET })
+                const payload = { username: user.username };
+                const token = jwt.sign(payload, process.env.JWT_SECRET as string, {
+                    expiresIn: '30d',
+                });
+
+                console.log('Set cookie nek:', user);
+
+                res.cookie(AUTH_COOKIE_KEY, token, {
+                    maxAge: 3000 * 9000,
+                    sameSite: 'none',
+                    secure: true,
+                    httpOnly: true,
+                    path: '/',
+                });
+
+
+                res.status(StatusCodes.OK).json({
+                    success: true,
+                    // data: payload,
+                });
+            } else {
+                res.status(StatusCodes.OK).json({
+                    message: 'Wrong username or password!',
+                    success: false,
+                });
+            }
+
+
         } catch (err) {
             // console.log("err", err);
             res.status(StatusCodes.OK).json({
@@ -33,48 +63,6 @@ export class LoginController {
             });
         }
 
-        // const user = await UserModel.findOne({ username });
-
-        // console.log('user', user);
-        // if (user) {
-        //   const payload = { username: user.username };
-        //   user.comparePassword(password, (err: Error, isMatch: boolean) => {
-        //     console.log('comparePassword', isMatch);
-        //     if (isMatch) {
-        //       const token = jwt.sign(payload, process.env.JWT_SECRET as string, {
-        //         expiresIn: '30d',
-        //       });
-
-        //       console.log('Set cookie nek:', user);
-
-        //       res.cookie(AUTH_COOKIE_KEY, token, {
-        //         maxAge: 3000 * 9000,
-        //         sameSite: 'none',
-        //         secure: true,
-        //         httpOnly: true,
-        //         path: '/',
-        //       });
-
-        //       res.status(StatusCodes.OK).json({
-        //         success: true,
-        //         // user: { username: user.username, user_id: user._id },
-        //       });
-        //     } else {
-        //       res.status(StatusCodes.OK).json({
-        //         success: false,
-        //         message: 'Invalid username or password!',
-        //       });
-        //       return;
-        //     }
-        //   });
-
-        //   return;
-        // } else {
-        //   res
-        //     .status(StatusCodes.OK)
-        //     .json({ success: false, message: 'Invalid username or password!' });
-        //   return;
-        // }
     }
 
     // add require req.body: username, password
@@ -84,13 +72,24 @@ export class LoginController {
         const username: string = req.body.username;
         const password: string = req.body.password;
 
-        console.log("register", { username, password });
-        console.log("req ", req.body);
+        const hashPassword = await userRepositoryController.genHashPassword(password);
+
+        console.log("register", { username, password, hashPassword });
+        // console.log("req ", req.body);
+
+        if (!username || !password) {
+            res.status(StatusCodes.OK).json({
+                success: false,
+            });
+            return;
+        }
 
         const newUser = {
             id: -1,
             username,
-            password,
+            hashPassword,
+            createdDate: new Date(),
+            updatedDate: new Date(),
         };
 
         try {
@@ -108,44 +107,25 @@ export class LoginController {
                 success: false,
             });
         }
-
-        // const user = await UserModel.findOne({ username });
-
-        // if (!user) {
-        //     try {
-        //         await UserModel.create(req.body);
-        //         res.status(StatusCodes.CREATED).json({ success: true });
-        //     } catch (err) {
-        //         res.status(StatusCodes.BAD_REQUEST).json({
-        //             success: false,
-        //             message: err,
-        //         });
-        //     }
-        // } else {
-        //     res.status(StatusCodes.BAD_REQUEST).json({
-        //         success: false,
-        //         message: `username ${username} exist !`,
-        //     });
-        // }
     }
 
-    // @use(requireAuth)
-    // @asyncWrapper(true)
-    // @get("/getLoginUser")
-    // async getLoginUser(req: Request, res: Response) {
-    //     const username: string = req.body.username;
-    //     console.log("getLoginUser", req.body);
-    //     const user = await UserModel.findOne({ username });
-    //     console.log("find user", user);
-    //     if (user) {
-    //         res.status(200).json({
-    //             success: true,
-    //             user: { username: user.username, user_id: user._id },
-    //         });
-    //     } else {
-    //         res.status(200).json({ success: true, user: null });
-    //     }
-    // }
+    @use(requireAuth)
+    @asyncWrapper(true)
+    @get("/getLoginUser")
+    async getLoginUser(req: Request, res: Response) {
+        const username: string = req.body.username;
+        console.log("getLoginUser", req.body);
+        const user = await userRepositoryController.getUser(username);
+        console.log("find user", user);
+        if (user) {
+            res.status(200).json({
+                success: true,
+                data: { username: user.username, id: user.id },
+            });
+        } else {
+            res.status(200).json({ success: true, user: null });
+        }
+    }
 
     // @use(requireAuth)
     // @asyncWrapper(true)

@@ -1,13 +1,16 @@
 import axios from "axios";
-import queryString from "query-string";
+// import queryString from "query-string";
 import { API_URL } from "../Enum/EnvironmentVariable";
 // import { localStore } from "../stores/LocalStore";
 
 const axiosClient = axios.create({
     baseURL: API_URL,
     headers: {
-        "content-type": "application/json",
+        // "Content-Type": "application/json",
+        // "content-Type": "application/x-www-form-urlencoded",
+        // "Content-Type": "application/x-www-form-urlencoded",
     },
+    withCredentials: true,
     // paramsSerializer: (params) => queryString.stringify(params),
 });
 

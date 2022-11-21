@@ -6,6 +6,7 @@ import App from "./Components/App.svelte";
 import "phaser";
 type GameConfig = Phaser.Types.Core.GameConfig;
 
+
 import WebFontLoaderPlugin from "phaser3-rex-plugins/plugins/webfontloader-plugin.js";
 import { HtmlUtils } from "./Utils/HtmlUtils";
 import { EntryScene } from "./Phaser/Scene/EntryScene";
@@ -13,6 +14,10 @@ import { gameSizeManager } from "./Phaser/Services/GameSizeManager";
 import { SelectMapScene } from "./Phaser/Scene/SelectMapScene";
 import { VowelSoundsGameScene } from "./Phaser/Scene/GameScene/Speaking/VowelSoundsGameScene";
 import { GameManager, gameManager } from "./Phaser/Game/GameManager";
+
+// import dotnet from "dotenv";
+// dotnet.config({ path: __dirname + '/.env' })
+// dotnet.config({ path: '../.env' })
 
 console.log("w window.screen.innerHeight", window.innerHeight);
 console.log("w window.screen.innerWidth", window.innerWidth);

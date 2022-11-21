@@ -1,53 +1,61 @@
 import { ApiError } from "./ApiError";
 import axios from "axios";
 import { API_URL } from "../Enum/EnvironmentVariable";
-import { localStore } from "../Stores/LocalStore";
-
-export interface GetNonceFromWalletAddressReponse {
-    nonce: string;
-}
+import type { User } from "../interface/entity/User";
+import axiosClient from "./axiosClient";
+import * as qs from "qs";
+import type { CommonResponse } from "../interface/api/CommonApiInterfaces";
 
 // auth api don't use token header so it will use its own axios client
 // instead of "axiosClient.ts"
 class AuthApi {
-    constructor() {}
+    constructor() { }
 
-    public async getNonceFromWalletAddress(
-        walletAddress: string
-    ): Promise<GetNonceFromWalletAddressReponse> {
-        const data = await axios
-            .get(`${API_URL}/web3login/getNonce`, {
-                params: { walletAddress },
-            })
-            .then((res) => res.data);
-        return data;
+    public async register(username: string, password: string): Promise<User> {
+        const data = { username, password };
+
+        const response = await axiosClient.post(
+            "/register",
+            qs.stringify(data),
+            {
+                headers: {
+                    // "Content-Type": "application/x-www-form-urlencoded",
+                },
+            }
+        );
+        console.log("register response", response);
+        return response.data as User;
+    }
+    public async login(username: string, password: string): Promise<CommonResponse> {
+        const data = { username, password };
+
+        const response = await axiosClient.post(
+            "/login",
+            qs.stringify(data),
+            {
+                headers: {
+                    // "Content-Type": "application/x-www-form-urlencoded",
+                },
+
+            }
+        );
+        // console.log("register response", response);
+        return response.data as CommonResponse;
     }
 
-    /**
-     * Verify signature after signed message in MetaMask
-     * if verify with result OK server will return authToken
-     * @param walletAddress
-     * @param signature
-     */
-    public async verifySignature(
-        walletAddress: string,
-        signature: string
-    ): Promise<void> {
-        const data = await axios
-            .post(`${API_URL}/web3login/verifySignature`, {
-                walletAddress,
-                signature,
-            })
-            .then((res) => res.data)
-            .catch((err) => {
-                if (err.response) {
-                    if (err.response.status == 417) {
-                        throw new ApiError(err.response.data?.message);
-                    }
-                }
-            });
+    public async getLoginUser(): Promise<CommonResponse> {
 
-        localStore.setAuthToken(data.authToken);
+        const response = await axiosClient.get(
+            "/getLoginUser",
+            {
+                headers: {
+                    // "Content-Type": "application/x-www-form-urlencoded",
+                },
+                withCredentials: true,
+            }
+        );
+        // console.log("register response", response);
+        return response.data as CommonResponse;
     }
 }
 

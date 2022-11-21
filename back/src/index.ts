@@ -1,25 +1,27 @@
 import express from "express";
 import cors from "cors";
-// import * as dotenv from 'dotenv';
+import dotenv from 'dotenv';
 import { AppRouter } from "./AppRouter";
 import "./controllers/LoginController";
 import "./controllers/TaskController";
+import "./controllers/QuestionController";
 import { errorHandlerMiddleware } from "./middlewares/errorHandler";
 import "reflect-metadata";
 
-// dotenv.config();
+dotenv.config();
+
 import cookieParser from "cookie-parser";
 import { appDataSource } from "./db/data-source";
+import { userRepositoryController } from "./db/repository/UserRepository";
 
 const app = express();
-// app.use(express.urlencoded());
 app.use(express.urlencoded({ extended: true }));
-// app.use(
-//   cors({
-//     origin: 'https://task-apps-txhai12.netlify.app',
-//     credentials: true,
-//   })
-// );
+app.use(
+    cors({
+        origin: "http://localhost:4000",
+        credentials: true,
+    })
+);
 app.use(cookieParser());
 app.use(AppRouter.getInstance());
 
@@ -36,6 +38,8 @@ const start = async () => {
                 console.log("Success initialize AppDataSource");
             })
             .catch((error) => console.log(error));
+
+        await userRepositoryController.init();
 
         app.listen(port, () => {
             console.log(`app is listening on port ${port}`);

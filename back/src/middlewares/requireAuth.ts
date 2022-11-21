@@ -19,6 +19,8 @@ export const requireAuth = async (
         process.env.JWT_SECRET as string
       );
       const user = decoded as { username: string };
+
+      console.log("require Auth ", user)
       req.body.username = user.username;
 
       console.log('pass by req_cookies_token', user);
@@ -31,6 +33,8 @@ export const requireAuth = async (
   }
 
   const authHeader = req.headers.authorization || '';
+
+  console.log("authHeader", authHeader)
 
   const authHeaderParts = authHeader.split(' ');
 

@@ -153,6 +153,7 @@ body .message-info {
 
 // BEGIN COMMON
 .btn {
+    pointer-events: auto;
     width: 120px;
     height: 50px;
     display: flex;
@@ -171,4 +172,5 @@ body .message-info {
 .modal-container {
     border: 5px solid pink;
 }
+
 /*END MODAL ZONE*/
