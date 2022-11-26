@@ -14,6 +14,7 @@ import { gameSizeManager } from "./Phaser/Services/GameSizeManager";
 import { SelectMapScene } from "./Phaser/Scene/SelectMapScene";
 import { VowelSoundsGameScene } from "./Phaser/Scene/GameScene/Speaking/VowelSoundsGameScene";
 import { GameManager, gameManager } from "./Phaser/Game/GameManager";
+import { CloudShootGameScene } from "./Phaser/Scene/GameScene/CloudShootGameScene.ts/CloudShootGameScene";
 
 // import dotnet from "dotenv";
 // dotnet.config({ path: __dirname + '/.env' })
@@ -30,6 +31,7 @@ const config: GameConfig = {
     // url: "",
     // canvas: gameCanvas,
     scale: {
+        mode: Phaser.Scale.CENTER_BOTH,
         parent: "game-wrapper",
         width: gameSizeManager.width,
         height: gameSizeManager.height,
@@ -42,8 +44,10 @@ const config: GameConfig = {
         // GAME SCENES
         // SPEAKING GAME SCENES
         VowelSoundsGameScene,
+        CloudShootGameScene,
     ],
-    //resolution: window.devicePixelRatio / 2,
+    // resolution: window.devicePixelRatio / 2,
+
     // fps: fps,
     // dom: {
     //     createContainer: true,
@@ -67,7 +71,7 @@ const config: GameConfig = {
     physics: {
         default: "arcade",
         arcade: {
-            debug: false,
+            debug: true,
             gravity: { y: 300 },
         },
     },
@@ -89,11 +93,18 @@ const config: GameConfig = {
 const game = new Phaser.Game(config);
 gameManager.setGameInstance(game);
 
-const app = new App({
-    target: HtmlUtils.getElementByIdOrFail("app"),
-    props: {
-        game: game,
-    },
-});
+let app: any;
+
+game.events.addListener('ready', () => {
+    console.log("game.events READY EVENT");
+    app = new App({
+        target: HtmlUtils.getElementByIdOrFail("app"),
+        props: {
+            game: game,
+        },
+    });
+})
 
 export default app;
+
+

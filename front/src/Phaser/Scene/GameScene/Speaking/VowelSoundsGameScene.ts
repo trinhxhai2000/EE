@@ -4,6 +4,7 @@ export const VowelSoundsGameSceneName = "VowelSoundsGameScene";
 
 // import skyBackground from '../../../public/game-objects/sky.png'
 import skyBackground from "/game-objects/sky.png";
+import background from "/game-objects/background.jpg";
 import star from "/game-objects/star.png";
 import bomb from "/game-objects/bomb.png";
 import ground from "/game-objects/platform.png";
@@ -25,6 +26,7 @@ export class VowelSoundsGameScene extends Scene {
     preload() {
         console.log("preload function", skyBackground);
         this.load.image("sky", skyBackground);
+        this.load.image("background", background);
         this.load.image("ground", ground);
         this.load.image("star", star);
         this.load.image("bomb", bomb);
@@ -36,6 +38,8 @@ export class VowelSoundsGameScene extends Scene {
 
     create() {
         this.add.image(400, 300, "sky");
+        const bg = this.add.image(400, 300, "background");
+        bg.setOrigin(0, 0);
 
         this.platforms = this.physics.add.staticGroup();
 

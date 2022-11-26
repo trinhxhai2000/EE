@@ -168,9 +168,12 @@ body .message-info {
 // END COMMON
 
 /*BEGIN MODAL ZONE*/
-
 .modal-container {
     border: 5px solid pink;
 }
 
 /*END MODAL ZONE*/
+
+canvas {
+    border: 5px solid red;
+}

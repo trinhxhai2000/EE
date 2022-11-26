@@ -3,8 +3,8 @@
 </script>
 
 <h2>Admin Page</h2>
-<Question />
 
+<!-- <Question /> -->
 <style lang="scss">
     h2 {
         color: cyan;

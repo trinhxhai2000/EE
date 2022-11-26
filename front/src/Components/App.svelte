@@ -15,21 +15,22 @@
     import { currentComponentModalStore } from "../Stores/ComponentModal";
     import ModalPlaceHolder from "./Modal/ModalPlaceHolder.svelte";
     export let game: Phaser.Game | undefined;
+
+    console.log("App component start!");
 </script>
 
 <div class="main">
     <ConfirmModal />
     <InfoModal />
 
-    {#if $currentComponentModalStore != null}
+    <Main {game} />
+
+    <!-- {#if $currentComponentModalStore != null}
         <ModalPlaceHolder />
     {/if}
 
     {#if $waitingModalStore.length > 0}
         <WaitingModal />
-        <!-- {:else if $}
-    <ConfirmModal />
-     -->
     {:else if $loginVisibilityStore}
         <Login />
     {:else if $registerVisibilityStore}
@@ -37,9 +38,8 @@
     {:else if $adminPageVisibilityStore}
         <AdminPage />
     {:else}
-        <!-- Game layout -->
-        <Main />
-    {/if}
+        <Main {game} />
+    {/if} -->
 </div>
 
 <style lang="scss">

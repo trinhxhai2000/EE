@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
     import Table from "../../../lib/RemoteTable/Table.svelte";
     import Search from "../../../lib/RemoteTable/Search.svelte";
     import Row from "../../../lib/RemoteTable/Row.svelte";
@@ -286,7 +286,7 @@
     async function validateAddingBeforeSubmit() {}
 </script>
 
-<!-- <div class="map-type-container">
+<div class="map-type-container">
     <div class="tab-wrapper">
         <Tabs>
             <TabList>
@@ -451,7 +451,7 @@
             </TabPanel>
         </Tabs>
     </div>
-</div> -->
+</div>
 
 <h2>h2</h2>
 
@@ -630,4 +630,4 @@
             padding: 0 10px;
         }
     }
-</style>
+</style> -->

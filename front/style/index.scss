@@ -5,6 +5,11 @@
 
 #game-wrapper {
     position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: black;
+    // [todo]: replace by some nice simple background
     canvas {
         display: block;
         background-color: orange;

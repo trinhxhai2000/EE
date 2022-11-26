@@ -19,15 +19,59 @@ export class GameManager {
     public startScene(sceneName: string) {
         if (!this.game) {
             throw new Error(
-                `Can't start the Scene ${sceneName} because game was ${this.game}`
+                `Can't start the Scene ${sceneName} because game was false`
+            );
+        }
+
+
+
+        console.log("game.events READY EVENT 2");
+
+        if (!this.game) {
+            throw new Error(
+                `Can't start the Scene ${sceneName} because game was false`
+            );
+        }
+
+        if (!this.game.scene) {
+            throw new Error(
+                `Can't start the Scene ${sceneName} because scene was false`
             );
         }
 
         const gameScene = this.game.scene.getScene(sceneName);
+
+        if (!gameScene) {
+            throw new Error(
+                `Can't get the Scene ${sceneName} from game instance !`
+            );
+        }
+
         gameScene.scene.start(sceneName);
+
+
     }
 
-    public startTheGame() {}
+    // public startSceneByGame(game: Phaser.Game, sceneName: string) {
+
+    //     if (!game.scene) {
+    //         throw new Error(
+    //             `Can't start the Scene ${sceneName} because scene was false`
+    //         );
+    //     }
+
+    //     const gameScene = game.scene.getScene(sceneName);
+
+    //     if (!gameScene) {
+    //         throw new Error(
+    //             `Can't get the Scene ${sceneName} from game instance !`
+    //         );
+    //     }
+
+    //     gameScene.scene.start(sceneName);
+    // }
+
+    public startTheGame() { }
 }
 
 export const gameManager = new GameManager();
