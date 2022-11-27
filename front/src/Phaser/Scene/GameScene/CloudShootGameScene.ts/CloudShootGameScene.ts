@@ -13,7 +13,7 @@ import dude from "/game-characters/dude.png";
 
 import arrow from "/game-objects/arrow.png";
 import bullet from "/game-objects/ball.png";
-import { Bullet } from "./Bullet";
+import { Bullet } from "./Object/Bullet";
 
 export interface Rectangle {
     leftX: number,
@@ -23,16 +23,17 @@ export interface Rectangle {
 }
 
 export class CloudShootGameScene extends Scene {
-    private platforms: any; // !!!!
+    private platforms: Phaser.Physics.Arcade.StaticGroup | null = null; // !!!!
     private player: any; // !!!!
     private cursors: any; // !!!!
     private stars: any;
 
     private arrow: Phaser.GameObjects.Sprite | null = null; // !!!!
-    private bullets: any;
+    private bullets: Phaser.Physics.Arcade.Group | null = null;
 
     private fireRate = 100;
     private lastFired = 0;
+    private clouds: Phaser.Physics.Arcade.StaticGroup | null = null;
 
 
     //temporary
@@ -100,7 +101,7 @@ export class CloudShootGameScene extends Scene {
 
         // this.platforms.create(600, 400, "ground");
         // this.platforms.create(50, 250, "ground");
-        this.platforms.create(750, 220, "ground");
+        // this.platforms.create(750, 220, "ground");
 
         /* #endregion */
 
@@ -149,6 +150,8 @@ export class CloudShootGameScene extends Scene {
         });
 
 
+
+
         this.arrow = this.physics.add.staticSprite(500, 800, 'arrow');
         // .sprite(400, 300, 'arrow');
         if (arrow === null) {
@@ -180,6 +183,18 @@ export class CloudShootGameScene extends Scene {
         //     undefined,
         //     this
         // );
+
+        if (this.bullets !== null && this.clouds !== null) {
+            this.physics.add.overlap(
+                this.bullets,
+                this.clouds,
+                this.onBulletsHitClouds,
+                undefined,
+                this
+            );
+        }
+
+
         this.startBackGround();
     }
 
@@ -190,6 +205,8 @@ export class CloudShootGameScene extends Scene {
         let preY = rect.topY;
         let curMaxHeight = -1;
 
+        this.clouds = this.physics.add.staticGroup();
+
         let curCloud: Phaser.Types.Physics.Arcade.ImageWithStaticBody | null = null;
 
         for (let curIdx = 1; curIdx <= 10;) {
@@ -198,8 +215,12 @@ export class CloudShootGameScene extends Scene {
             // let gap = 0;
 
             if (curCloud === null) {
-                curCloud = this.physics.add.staticImage(preX, preY, `cloud${curIdx}`).setVisible(false).setScale(0.65).setOrigin(0, 0).refreshBody();
+                curCloud = this.clouds.create(preX, preY, `cloud${curIdx}`).setVisible(false).setScale(0.65).setOrigin(0, 0).refreshBody();
+                // curCloud = this.physics.add.staticImage(preX, preY, `cloud${curIdx}`).setVisible(false).setScale(0.65).setOrigin(0, 0).refreshBody();
                 console.log(`add cloud${curIdx}`);
+            }
+            if (curCloud === null) {
+                throw new Error(`Can't create clouds`)
             }
 
 
@@ -250,22 +271,26 @@ export class CloudShootGameScene extends Scene {
         if (Phaser.Input.Keyboard.JustDown(spacebar) && time > this.lastFired) {
             console.log("fuck ?")
 
-            var bullet = this.bullets.get();
+
+            if (this.bullets !== null) {
+                var bullet = this.bullets.get();
 
 
 
-            if (bullet && this.arrow) {
+                if (bullet && this.arrow) {
 
 
-                this.add.image(this.arrow.x + 300, this.arrow.y - 300, "star");
-                this.add.image(this.arrow.x, this.arrow.y, "star");
+                    this.add.image(this.arrow.x + 300, this.arrow.y - 300, "star");
+                    this.add.image(this.arrow.x, this.arrow.y, "star");
 
 
-                // this.physics.add.image
-                // bullet.fire(this.arrow.x, this.arrow.y, this.arrow.x + 300, this.arrow.y - 300);
-                bullet.fireToAngle(this.arrow.x, this.arrow.y, this.arrow.rotation);
-                this.lastFired = time + 50;
+                    // this.physics.add.image
+                    // bullet.fire(this.arrow.x, this.arrow.y, this.arrow.x + 300, this.arrow.y - 300);
+                    bullet.fireToAngle(this.arrow.x, this.arrow.y, this.arrow.rotation);
+                    this.lastFired = time + 50;
+                }
             }
+
         }
 
 
@@ -273,14 +298,14 @@ export class CloudShootGameScene extends Scene {
 
         if (cursors.down.isDown) {
             if (this.arrow) {
-                this.arrow.rotation += 0.01;
+                this.arrow.rotation += 0.03;
                 console.log("this.arrow.rotation", this.arrow.rotation)
             }
             return
         }
         if (cursors.up.isDown) {
             if (this.arrow) {
-                this.arrow.rotation -= 0.01;
+                this.arrow.rotation -= 0.03;
                 console.log("this.arrow.rotation", this.arrow.rotation)
             }
             return
@@ -313,8 +338,9 @@ export class CloudShootGameScene extends Scene {
     }
 
 
-    collectStar(player: any, star: any) {
-        star.disableBody(true, true);
+    onBulletsHitClouds(bullet: any, cloud: any) {
+        bullet.disableBody(true, true);
+        cloud.disableBody(true, true);
 
     }
 }

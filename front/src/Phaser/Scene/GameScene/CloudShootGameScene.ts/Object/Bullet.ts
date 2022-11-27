@@ -58,28 +58,6 @@ export class Bullet extends Phaser.Physics.Arcade.Image {
         } else {
             this.fire(fromX, fromY, fromX + dx, fromY + dy)
         }
-
-
-        // this.fire(fromX, fromY, fromX + 500, fromY)
-
-        // console.log("fire to angle", rotation)
-        // this.setActive(true);
-        // this.setVisible(true);
-        // this.setGravityY(0);
-        // this.setGravityX(0);
-        // this.refreshBody();
-
-
-        // this.setPosition(fromX, fromY);
-
-        // // why work?
-        // this.scene.physics.moveTo(this, toX, toY, Phaser.Math.GetSpeed(600, 1), 800);
-
-        // why not work?
-        // this.scene.physics.moveTo(this, toX, toY, Phaser.Math.GetSpeed(10000, 1));
-
-        // not working
-        // this.scene.physics.accelerateTo(this, toX, toY, Phaser.Math.GetSpeed(300, 1));
     }
 
     update(time: number, delta: number) {
