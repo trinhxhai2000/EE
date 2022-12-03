@@ -4,7 +4,7 @@ declare module "phaser3-rex-plugins/plugins/virtualjoystick.js" {
     /*const content: any; // eslint-disable-line
     export default content;*/
     import GameObject = Phaser.GameObjects.GameObject;
-    import { GameObjects, Scene } from "phaser";
+    import { Scene } from "phaser";
 
     type CursorKey = {
         isDown: boolean;
@@ -43,17 +43,17 @@ declare module "phaser3-rex-plugins/plugins/webfontloader-plugin.js" {
     const content: any; // eslint-disable-line
     export default content;
 }
-// declare module "phaser3-rex-plugins/plugins/outlinepipeline-plugin.js" {
-//     import GameObject = Phaser.GameObjects.GameObject;
+declare module "phaser3-rex-plugins/plugins/outlinepipeline-plugin.js" {
+    import GameObject = Phaser.GameObjects.GameObject;
 
-//     class OutlinePipelinePlugin {
-//         add(gameObject: GameObject, config: object);
+    class OutlinePipelinePlugin {
+        add(gameObject: GameObject, config: object);
 
-//         remove(gameObject: GameObject, name?: string);
-//     }
+        remove(gameObject: GameObject, name?: string);
+    }
 
-//     export default OutlinePipelinePlugin;
-// }
+    export default OutlinePipelinePlugin;
+}
 declare module "phaser3-rex-plugins/plugins/gestures.js" {
     export const Pinch: any; // eslint-disable-line
 }

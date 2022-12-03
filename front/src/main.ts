@@ -24,7 +24,8 @@ console.log("w window.screen.innerHeight", window.innerHeight);
 console.log("w window.screen.innerWidth", window.innerWidth);
 gameSizeManager.setSize(window.innerHeight, window.innerWidth);
 
-const config: GameConfig = {
+
+export const GAME_CONFIG: GameConfig = {
     type: Phaser.CANVAS,
 
     title: "EE Edu",
@@ -90,7 +91,7 @@ const config: GameConfig = {
     banner: false,
 };
 
-const game = new Phaser.Game(config);
+const game = new Phaser.Game(GAME_CONFIG);
 gameManager.setGameInstance(game);
 
 let app: any;

@@ -20,6 +20,14 @@
     src: url("./fonts/SpaceGrotesk-Regular.ttf") format("truetype");
 }
 
+@font-face {
+    font-family: "LilitaOne";
+    font-style: normal;
+    font-display: swap;
+    font-weight: 400;
+    src: url("./fonts/LilitaOne-Regular.ttf") format("truetype");
+}
+
 * {
-    font-family: 'Inter';
+    font-family: "LilitaOne";
 }

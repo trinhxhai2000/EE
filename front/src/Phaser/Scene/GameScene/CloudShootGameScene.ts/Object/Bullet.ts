@@ -13,13 +13,12 @@ export class Bullet extends Phaser.Physics.Arcade.Image {
         this.refreshBody();
 
 
-        console.log("pos From", {
-            fromX, fromY
-        })
-        console.log("pos TO", {
-            toX, toY
-        })
-
+        // console.log("pos From", {
+        //     fromX, fromY
+        // })
+        // console.log("pos TO", {
+        //     toX, toY
+        // })
 
         this.setPosition(fromX, fromY);
 
@@ -36,22 +35,24 @@ export class Bullet extends Phaser.Physics.Arcade.Image {
     fireToAngle(fromX: number, fromY: number, rotation: number) {
         // rotation += 100;
 
-        console.log("pos From", {
-            fromX, fromY
-        })
+        // console.log("pos From", {
+        //     fromX, fromY
+        // })
 
-        // rotation = -Math.PI / 4;
         const alpha = Math.abs(rotation);
         const r = 100;
 
         let dx = 0;
         let dy = 0;
 
-
         dy = r * Math.sin(alpha);
         dx = r * Math.cos(alpha);
 
-        console.log("fire prop", { rotation, alpha, dx, dy })
+        // console.log("fire prop", { rotation, alpha, dx, dy })
+        if (dx === 0 && dy === 0) {
+            console.log("we fucked !")
+            return
+        }
 
         if (rotation < 0) {
             this.fire(fromX, fromY, fromX + dx, fromY - dy)

@@ -23,6 +23,18 @@ class QuestionApi {
         return response.data as Question[];
     }
 
+    public async isCorrectOption(questionId: number, optionId: number): Promise<boolean> {
+        return new Promise((resolve, reject) => {
+            setTimeout(function () {
+                if (Math.random() * 10 < 3) {
+                    resolve(true);
+                } else {
+                    resolve(false);
+                }
+            }, 2000);
+        });
+    }
+
 }
 
 export const questionApi = new QuestionApi();

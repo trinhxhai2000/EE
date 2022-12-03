@@ -14,6 +14,13 @@ import dude from "/game-characters/dude.png";
 import arrow from "/game-objects/arrow.png";
 import bullet from "/game-objects/ball.png";
 import { Bullet } from "./Object/Bullet";
+import { Player } from "./Object/Player";
+import { lazyLoadPlayerCharacterTextures } from "../../../Entity/PlayerTexturesLoadingManager";
+import { PlayerAnimationDirections } from "../../../Player/Animation";
+import type { Question } from "../../../../interface/entity/Question";
+import { CommonUtils } from "../../../../Utils/CommonUtils";
+import type { Option } from "../../../../interface/entity/Option";
+import { Cloud, CloudAnimationMove } from "./Object/Cloud";
 
 export interface Rectangle {
     leftX: number,
@@ -22,23 +29,25 @@ export interface Rectangle {
     bottomY: number,
 }
 
+
+
 export class CloudShootGameScene extends Scene {
     private platforms: Phaser.Physics.Arcade.StaticGroup | null = null; // !!!!
-    private player: any; // !!!!
     private cursors: any; // !!!!
     private stars: any;
 
-    private arrow: Phaser.GameObjects.Sprite | null = null; // !!!!
-    private bullets: Phaser.Physics.Arcade.Group | null = null;
-
     private fireRate = 100;
     private lastFired = 0;
-    private clouds: Phaser.Physics.Arcade.StaticGroup | null = null;
+    private player: Player | null = null;
+    private clouds: Cloud[] = [];
 
+    private markOverLap = new Map<string, boolean>();
 
     //temporary
     private canvas: HTMLCanvasElement | null = null;
 
+    // question
+    private currentQuestionIndex = 0;
 
 
     constructor() {
@@ -50,7 +59,6 @@ export class CloudShootGameScene extends Scene {
 
     // From the very start, let's preload images used in th e ReconnectingScene.
     preload() {
-        console.log("preload function", skyBackground);
         this.load.image("sky", skyBackground);
         this.load.image("background", background);
         this.load.image("ground", ground);
@@ -59,10 +67,9 @@ export class CloudShootGameScene extends Scene {
         for (let i = 1; i <= 10; i++) {
             let href = `/game-objects/cloud${i}.png`;
             this.load.image(`cloud${i}`, href);
-            console.log(`load cloud${i}`);
+            // console.log(`load cloud${i}`);
         }
 
-        this.load.image("star", star);
         this.load.image("bomb", bomb);
         this.load.spritesheet("dude", dude, {
             frameWidth: 32,
@@ -72,6 +79,15 @@ export class CloudShootGameScene extends Scene {
         this.load.image("arrow", arrow);
         this.load.image("bullet", bullet);
 
+        (this.load as any).rexWebFont({
+            custom: {
+                families: ["inter", "Inter", "LilitaOne"],
+                testString: "abcdefg",
+            },
+        });
+
+        this.load.bitmapFont('gothic', 'assets/font/bitmap/gothic.png', 'assets/font/bitmap/gothic.xml');
+        this.load.bitmapFont('LilitaOne', 'assets/font/bitmap/LilitaOne.png', 'assets/font/bitmap/LilitaOne.xml');
     }
 
     create() {
@@ -86,13 +102,13 @@ export class CloudShootGameScene extends Scene {
 
         this.platforms = this.physics.add.staticGroup();
 
+
         /* #region create ground  */
 
         const groundSize = {
             w: 400,
             h: 32
         };
-
 
         this.platforms.create(0, this.canvas.height - groundSize.h * 2, "ground").setScale(2).setOrigin(0, 0).refreshBody();
         this.platforms.create(groundSize.w, this.canvas.height - 32 * 2, "ground").setScale(2).setOrigin(0, 0).refreshBody();
@@ -105,61 +121,20 @@ export class CloudShootGameScene extends Scene {
 
         /* #endregion */
 
-        /* #region create player */
-        this.player = this.physics.add.sprite(100, 450, "dude");
 
-        this.player.setBounce(0.2);
-        this.player.setCollideWorldBounds(true);
-
-        this.anims.create({
-            key: "left",
-            frames: this.anims.generateFrameNumbers("dude", {
-                start: 0,
-                end: 3,
-            }),
-            frameRate: 10,
-            repeat: -1,
-        });
-
-        this.anims.create({
-            key: "turn",
-            frames: [{ key: "dude", frame: 4 }],
-            frameRate: 20,
-        });
-
-        this.anims.create({
-            key: "right",
-            frames: this.anims.generateFrameNumbers("dude", {
-                start: 5,
-                end: 8,
-            }),
-            frameRate: 10,
-            repeat: -1,
-        });
-
-        /* #endregion */
         this.cursors = this.input.keyboard.createCursorKeys();
 
         this.randomlyPutCould()
 
 
-        this.bullets = this.physics.add.group({
-            classType: Bullet,
-            maxSize: 10000,
-            runChildUpdate: true
-        });
+        this.player = new Player(this, 100, 100);
 
 
 
-
-        this.arrow = this.physics.add.staticSprite(500, 800, 'arrow');
         // .sprite(400, 300, 'arrow');
         if (arrow === null) {
             throw new Error();
         }
-        // this.arrow.anchor.set(0.5);
-        // this.arrow.body.allowRotation = false;
-
 
         // this.stars = this.physics.add.group({
         //     key: "star",
@@ -173,7 +148,9 @@ export class CloudShootGameScene extends Scene {
 
         // this.scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
 
+        // this.physics.add.collider(this.player, this.platforms);
         this.physics.add.collider(this.player, this.platforms);
+
         // this.physics.add.collider(this.stars, this.platforms);
 
         // this.physics.add.overlap(
@@ -184,9 +161,14 @@ export class CloudShootGameScene extends Scene {
         //     this
         // );
 
-        if (this.bullets !== null && this.clouds !== null) {
+
+
+        const bullets = this.player.getBullets();
+
+        if (bullets !== null && this.clouds !== null) {
+            // this.physics.add.collider
             this.physics.add.overlap(
-                this.bullets,
+                bullets,
                 this.clouds,
                 this.onBulletsHitClouds,
                 undefined,
@@ -194,20 +176,26 @@ export class CloudShootGameScene extends Scene {
             );
         }
 
-
         this.startBackGround();
     }
 
-    randomlyPutCould(rect: Rectangle = { leftX: 100, rightX: 1500, topY: 100, bottomY: 300 }) {
-        //[todo] : efficiently put cloud in specific rect, for now put it fixed
+    async randomlyPutCould(rect: Rectangle = { leftX: 100, rightX: 1500, topY: 100, bottomY: 350 }) {
 
+        const test = new Cloud(this, 500, 500, `cloud1`);
+        // test.playAnimation(CloudAnimationMove.NORMAL)
+        setTimeout(() => {
+            test.playAnimation(CloudAnimationMove.WRONG)
+        }, 1000)
+        return
+        //[todo] : efficiently put cloud in specific rect, for now put it fixed
         let preX = rect.leftX;
         let preY = rect.topY;
         let curMaxHeight = -1;
+        let redo = false;
+        this.clouds = [];
 
-        this.clouds = this.physics.add.staticGroup();
 
-        let curCloud: Phaser.Types.Physics.Arcade.ImageWithStaticBody | null = null;
+        let curCloud: Cloud | null = null;
 
         for (let curIdx = 1; curIdx <= 10;) {
 
@@ -215,16 +203,19 @@ export class CloudShootGameScene extends Scene {
             // let gap = 0;
 
             if (curCloud === null) {
-                curCloud = this.clouds.create(preX, preY, `cloud${curIdx}`).setVisible(false).setScale(0.65).setOrigin(0, 0).refreshBody();
+                curCloud = new Cloud(this, preX, preY, `cloud${curIdx}`).setVisible(false).addToUpdateList();
+                await curCloud.ready();
                 // curCloud = this.physics.add.staticImage(preX, preY, `cloud${curIdx}`).setVisible(false).setScale(0.65).setOrigin(0, 0).refreshBody();
-                console.log(`add cloud${curIdx}`);
+                // console.log(`add cloud${curIdx}`);
             }
+
             if (curCloud === null) {
                 throw new Error(`Can't create clouds`)
             }
+            const width = curCloud.width;
+            const height = curCloud.height;
 
-
-            curMaxHeight = Math.max(curMaxHeight, curCloud.height);
+            curMaxHeight = Math.max(curMaxHeight, height);
             const newX = preX + gap;
             const newY = preY;
             if (newX >= rect.rightX && newY >= rect.bottomY) {
@@ -232,115 +223,250 @@ export class CloudShootGameScene extends Scene {
                 break;
             }
 
+            // console.log("debug", { newX, newY, preX, preY })
+            // console.log("debug cloud", { width, height })
+
             if (newX <= rect.rightX && newY <= rect.bottomY) {
-                curCloud.setPosition(newX, newY).setVisible(true).refreshBody();
-                preX = newX + curCloud.width * 0.65;
+                curCloud.setPosition(newX + width / 2, newY).setVisible(true);
+                preX = newX + width;
                 preY = newY;
                 curIdx += 1;
+                this.clouds.push(curCloud);
                 curCloud = null;
+
             } else {
                 preX = rect.leftX;
-                preY += curMaxHeight;
+                preY += curMaxHeight + 20;
                 curMaxHeight = -1;
+                if (redo) {
+                    throw new Error('Some things fucked');
+                }
+                redo = true;
             }
+        }
 
+        this.putOptionToClouds();
+    }
+
+    putOptionToClouds() {
+
+        const clouds = this.clouds;
+        const nClouds = this.clouds.length;
+
+        if (nClouds == 0) {
+            throw Error('There is no cloud to put options')
+        }
+
+        const question = LIST_QUEST[this.currentQuestionIndex];
+        const options = question.options;
+        console.log("QUESSSTION", question)
+        let curOptionsIdx = 0;
+        for (const cloud of clouds) {
+            const opt = options[curOptionsIdx++];
+            cloud.setOptionText(opt);
+            // break
         }
 
 
-        // this.add.image(rect.topX, rect.bottomY, 'cloud2').setScale(0.5).setOrigin(0, 0);
-        // this.add.image(rect.bottomX, rect.topY, 'cloud3').setScale(0.5).setOrigin(0, 0);
-        // this.add.image(rect.bottomX, rect.bottomY, 'cloud4').setScale(0.5).setOrigin(0, 0);
-
     }
+
 
     // BACKGROUND - INFINITE MOVING MANAGER
 
     startBackGround() {
-        this.stars = this.add.image(400, 300, "star");
+        // this.stars = this.add.image(400, 300, "star");
         // this.stars.setCollideWorldBounds(true);
     }
 
     update(time: number, delta: number): void {
 
-        // let x = this.input.keyboard.addCapture(Phaser.Input.Keyboard.KeyCodes.SPACE);
-        // x.on('isdown', () => {
-
-        // })
-
-        const spacebar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-        if (Phaser.Input.Keyboard.JustDown(spacebar) && time > this.lastFired) {
-            console.log("fuck ?")
+        this.input.keyboard.on('keydown-S', () => this.handleShootingKeyPress(time), this);
 
 
-            if (this.bullets !== null) {
-                var bullet = this.bullets.get();
-
-
-
-                if (bullet && this.arrow) {
-
-
-                    this.add.image(this.arrow.x + 300, this.arrow.y - 300, "star");
-                    this.add.image(this.arrow.x, this.arrow.y, "star");
-
-
-                    // this.physics.add.image
-                    // bullet.fire(this.arrow.x, this.arrow.y, this.arrow.x + 300, this.arrow.y - 300);
-                    bullet.fireToAngle(this.arrow.x, this.arrow.y, this.arrow.rotation);
-                    this.lastFired = time + 50;
+        const arrow = this.player?.getArrow();
+        if (arrow) {
+            if (this.cursors.down.isDown) {
+                if (arrow) {
+                    arrow.rotation += 0.03;
                 }
+                return
             }
-
-        }
-
-
-        let cursors = this.input.keyboard.createCursorKeys();
-
-        if (cursors.down.isDown) {
-            if (this.arrow) {
-                this.arrow.rotation += 0.03;
-                console.log("this.arrow.rotation", this.arrow.rotation)
+            if (this.cursors.up.isDown) {
+                if (arrow) {
+                    arrow.rotation -= 0.03;
+                }
+                return
             }
-            return
-        }
-        if (cursors.up.isDown) {
-            if (this.arrow) {
-                this.arrow.rotation -= 0.03;
-                console.log("this.arrow.rotation", this.arrow.rotation)
-            }
-            return
-        }
-
-
-        console.log("update function");
-        if (cursors.left.isDown) {
-            this.player.setVelocityX(-160);
-            this.player.anims.play("left", true);
-        } else if (cursors.right.isDown) {
-            this.player.setVelocityX(160);
-            this.player.anims.play("right", true);
         } else {
-            this.player.setVelocityX(0);
-            this.player.anims.play("turn");
-        }
-        if (cursors.up.isDown && this.player.body.touching.down) {
-            this.player.setVelocityY(-330);
+
         }
 
 
-        /* #region  shooting */
-        // this.arrow.rotation = this.physics.angleToPointer(arrow);
+        if (this.cursors.left.isDown) {
+            this.player?.getBody().setVelocityX(-160);
+            this.player?.playAnimation(PlayerAnimationDirections.Left);
+            // this.player.anims.play("left", true);
+        } else if (this.cursors.right.isDown) {
+            this.player?.getBody().setVelocityX(160);
+            this.player?.playAnimation(PlayerAnimationDirections.Right);
+            // this.player.anims.play("right", true);
+        } else {
+            this.player?.getBody().setVelocityX(0);
+            // this.player.anims.play("turn");
+            this.player?.playAnimation(PlayerAnimationDirections.Turn);
+        }
 
-        // if (game.input.activePointer.isDown) {
-        //     fire();
+        this.input.keyboard.on('keydown-SPACE', () => {
+            if (this.player?.getBody().touching.down) {
+                this.player?.getBody().setVelocityY(-330);
+            }
+        }, this);
+
+        // if (this.cursors.up.isDown && this.player.body.touching.down) {
+        //     this.player1?.getBody().setVelocityY(-330);
         // }
-        /* #endregion */
-    }
-
-
-    onBulletsHitClouds(bullet: any, cloud: any) {
-        bullet.disableBody(true, true);
-        cloud.disableBody(true, true);
 
     }
+
+    handleShootingKeyPress(time: number) {
+        const bullets = this.player?.getBullets();
+        const arrow = this.player?.getArrow();
+        const player = this.player;
+
+        if (time - this.lastFired > 1000) {
+
+
+            if (bullets && arrow && player) {
+                const bullet = bullets.get();
+
+                if (bullet && arrow && player) {
+                    // for debug: mark position star shooting
+                    // this.add.image(player.x, player.y, "star");
+
+                    // bullet.fire(this.arrow.x, this.arrow.y, this.arrow.x + 300, this.arrow.y - 300);
+                    this.lastFired = time;
+                    console.log("Do sShooting ", time)
+                    bullet.fireToAngle(player.x, player.y, arrow.rotation);
+                }
+
+            }
+
+        }
+
+    }
+
+    onBulletsHitClouds(cloud: any, bullet: any) {
+        // onBulletsHitClouds(cloud: Cloud, bullet: Bullet) {
+        // bullet.destroy();
+        // cloud.destroy();
+        // console.log("cloud", cloud)
+
+        if (this.markOverLap.get(cloud.currentTexture)) {
+            return
+        }
+
+        this.markOverLap.set(cloud.currentTexture, true);
+
+        cloud.playAnimation(CloudAnimationMove.HIT);
+
+        console.log("onBulletsHitClouds")
+        bullet.body.stop();
+        bullet.setGravityY(-300);
+
+        isCorrectOption(1).then((isAnswer) => {
+
+            const rand = Math.floor(Math.random() * 3);
+            console.log("Rand", rand)
+            if (rand === 0) {
+                bullet.destroy();
+                cloud.destroy();
+            } else {
+                bullet.destroy();
+                this.markOverLap.set(cloud.currentTexture, false);
+            }
+        })
+
+        // cloud.getBody().stop();
+
+        //not thing happen
+        // bullet.setActive(false);
+        // cloud.setActive(false);
+
+        // bullet.disableBody(true, true);
+        // cloud.
+
+    }
+}
+
+
+// OTHER BUSSINESS
+let mapAnswer = new Map<number, boolean>();
+const LIST_QUEST: Question[] = ListQuestionGenerator();
+
+
+function ListQuestionGenerator(): Question[] {
+    let result: Question[] = [];
+
+    let currentOptionId = 1;
+    const charList = ['A'];
+    for (let i = 1; i < 26; i++) {
+        var chr = String.fromCharCode(65 + i)
+        charList.push(chr);
+    }
+
+    const numberOfAnswer = 6;
+
+    for (let i = 0; i < 20; i++) {
+        const question: Question = {
+            id: i + 1,
+            description: '',
+            options: []
+        }
+        // just make a copy
+        const cloneCharList = charList.slice();
+        CommonUtils.shuffle<string>(cloneCharList);
+
+
+        question.description = `Choose ${cloneCharList.slice(0, numberOfAnswer).join(', ')} !!`;
+
+
+        for (let j = 0; j < numberOfAnswer; j++) {
+            mapAnswer.set(currentOptionId, true);
+            const option: Option = {
+                id: currentOptionId++,
+                description: `${cloneCharList[j]}. 1234`,
+            }
+            question.options.push(option);
+        }
+
+        for (let j = numberOfAnswer; j < cloneCharList.length; j++) {
+            mapAnswer.set(currentOptionId, false);
+            const option: Option = {
+                id: currentOptionId++,
+                description: `${cloneCharList[j]}. 1234`,
+            }
+            question.options.push(option);
+        }
+
+        result.push(question);
+    }
+
+    result = CommonUtils.shuffle(result);
+    console.log("gen question result:", result)
+
+    // !!!!!
+    return result;
+}
+
+
+async function isCorrectOption(optionId: number): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+        setTimeout(function () {
+            if (mapAnswer.get(optionId)) {
+                resolve(true);
+            } else {
+                resolve(false);
+            }
+        }, 2000);
+    });
 }
