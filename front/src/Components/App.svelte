@@ -23,9 +23,7 @@
     <ConfirmModal />
     <InfoModal />
 
-    <Main {game} />
-
-    <!-- {#if $currentComponentModalStore != null}
+    {#if $currentComponentModalStore != null}
         <ModalPlaceHolder />
     {/if}
 
@@ -39,7 +37,7 @@
         <AdminPage />
     {:else}
         <Main {game} />
-    {/if} -->
+    {/if}
 </div>
 
 <style lang="scss">

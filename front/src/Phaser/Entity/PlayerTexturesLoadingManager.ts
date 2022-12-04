@@ -34,7 +34,9 @@ export const lazyLoadPlayerCharacterTextures = (
         try {
             //TODO refactor
             const playerResourceDescriptor = getResourceDescriptor(textureKey);
+            console.log("lazyLoadPlayerCharacterTextures", playerResourceDescriptor)
             if (playerResourceDescriptor && !loadPlugin.textureManager.exists(playerResourceDescriptor.name)) {
+                console.log("lazyLoadPlayerCharacterTextures", playerResourceDescriptor)
                 promisesList.push(
                     createLoadingPromise(
                         loadPlugin,
@@ -44,9 +46,12 @@ export const lazyLoadPlayerCharacterTextures = (
                             : DEFAULT_FRAME_CONFIG
                     )
                 );
+            } else {
+                console.log("FUCK")
             }
         } catch (err) {
             console.error(err);
+            console.log("FUCK ERROR", err)
         }
     });
     let returnPromise: CancelablePromise<Array<string | BodyResourceDescriptionInterface>>;
@@ -150,6 +155,7 @@ export const createLoadingPromise = (
             return;
         });
 
+        console.log('do load spritesheet', playerResourceDescriptor);
         loadPlugin.spritesheet(playerResourceDescriptor.name, playerResourceDescriptor.img, frameConfig);
         const errorCallback = (file: { src: string }) => {
             if (file.src !== playerResourceDescriptor.img) return;
@@ -160,6 +166,7 @@ export const createLoadingPromise = (
         };
         const successCallback = () => {
             loadPlugin.off("loaderror", errorCallback);
+            console.log('successCallback do load spritesheet', playerResourceDescriptor);
             res(playerResourceDescriptor);
         };
 

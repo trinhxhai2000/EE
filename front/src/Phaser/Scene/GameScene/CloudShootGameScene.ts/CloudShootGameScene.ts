@@ -21,6 +21,12 @@ import type { Question } from "../../../../interface/entity/Question";
 import { CommonUtils } from "../../../../Utils/CommonUtils";
 import type { Option } from "../../../../interface/entity/Option";
 import { Cloud, CloudAnimationMove } from "./Object/Cloud";
+import { CLOUD_RESOURCES } from "../../../Entity/PlayerTextures";
+
+import { currentScore, currentCountDown, currentQuestion } from "../../../../Stores/GameActionStore/CloudShootGameStore";
+import { GAME_CONFIG } from "../../../../main";
+import { infoModalStore } from "../../../../Stores/modalStore";
+import { adminPageVisibilityStore } from "../../../../Stores/LoginVisibilityStore";
 
 export interface Rectangle {
     leftX: number,
@@ -29,7 +35,11 @@ export interface Rectangle {
     bottomY: number,
 }
 
-
+export const SCENE_CONFIG = {
+    NUMBER_OF_ROUND: 2,
+    ROUND_DURATION: 1,
+    BREAK_DURATION: 1,
+}
 
 export class CloudShootGameScene extends Scene {
     private platforms: Phaser.Physics.Arcade.StaticGroup | null = null; // !!!!
@@ -50,6 +60,10 @@ export class CloudShootGameScene extends Scene {
     private currentQuestionIndex = 0;
 
 
+    // external
+    private currentScore = 0;
+
+
     constructor() {
         super({
             key: CloudShootGameSceneName,
@@ -64,11 +78,6 @@ export class CloudShootGameScene extends Scene {
         this.load.image("ground", ground);
         this.load.image("star", star);
 
-        for (let i = 1; i <= 10; i++) {
-            let href = `/game-objects/cloud${i}.png`;
-            this.load.image(`cloud${i}`, href);
-            // console.log(`load cloud${i}`);
-        }
 
         this.load.image("bomb", bomb);
         this.load.spritesheet("dude", dude, {
@@ -90,7 +99,20 @@ export class CloudShootGameScene extends Scene {
         this.load.bitmapFont('LilitaOne', 'assets/font/bitmap/LilitaOne.png', 'assets/font/bitmap/LilitaOne.xml');
     }
 
+
+    initUIData() {
+        this.restartCountDown();
+    }
+    restartCountDown() {
+        console.log("restartCountDown")
+        currentCountDown.set({
+            duration: 20,
+            startTime: Date.now()
+        })
+    }
+
     create() {
+
         this.canvas = this.game.canvas;
         if (!this.canvas) {
             throw new Error("Can't get canvas element from phaser games");
@@ -119,12 +141,17 @@ export class CloudShootGameScene extends Scene {
         // this.platforms.create(50, 250, "ground");
         // this.platforms.create(750, 220, "ground");
 
+        // const cloudtest = this.physics.add.sprite(100, 100, 'cloudtest', 3);
+
+        // cloudtest.setCollideWorldBounds(true);
+
+
         /* #endregion */
 
 
         this.cursors = this.input.keyboard.createCursorKeys();
 
-        this.randomlyPutCould()
+
 
 
         this.player = new Player(this, 100, 100);
@@ -176,24 +203,43 @@ export class CloudShootGameScene extends Scene {
             );
         }
 
-        this.startBackGround();
+        // this.startBackGround();
+        this.initUIData();
+        this.startTheGame();
+    }
+
+    setUpOverlapBallAndCloud() {
+        if (this.player) {
+            const bullets = this.player.getBullets();
+
+            if (bullets !== null && this.clouds !== null) {
+                // this.physics.add.collider
+                this.physics.add.overlap(
+                    bullets,
+                    this.clouds,
+                    this.onBulletsHitClouds,
+                    undefined,
+                    this
+                );
+            }
+        }
+
     }
 
     async randomlyPutCould(rect: Rectangle = { leftX: 100, rightX: 1500, topY: 100, bottomY: 350 }) {
+        // const test = new Cloud(this, 500, 500, `cloud1`);
+        // // test.playAnimation(CloudAnimationMove.WRONG)
+        // setTimeout(() => {
+        //     test.playAnimation(CloudAnimationMove.WRONG)
+        // }, 100)
+        // return
 
-        const test = new Cloud(this, 500, 500, `cloud1`);
-        // test.playAnimation(CloudAnimationMove.NORMAL)
-        setTimeout(() => {
-            test.playAnimation(CloudAnimationMove.WRONG)
-        }, 1000)
-        return
         //[todo] : efficiently put cloud in specific rect, for now put it fixed
         let preX = rect.leftX;
         let preY = rect.topY;
         let curMaxHeight = -1;
         let redo = false;
         this.clouds = [];
-
 
         let curCloud: Cloud | null = null;
 
@@ -245,11 +291,12 @@ export class CloudShootGameScene extends Scene {
             }
         }
 
+        this.setUpOverlapBallAndCloud();
+
         this.putOptionToClouds();
     }
 
     putOptionToClouds() {
-
         const clouds = this.clouds;
         const nClouds = this.clouds.length;
 
@@ -258,6 +305,7 @@ export class CloudShootGameScene extends Scene {
         }
 
         const question = LIST_QUEST[this.currentQuestionIndex];
+        this.putQuestionDataToUI(question);
         const options = question.options;
         console.log("QUESSSTION", question)
         let curOptionsIdx = 0;
@@ -266,16 +314,60 @@ export class CloudShootGameScene extends Scene {
             cloud.setOptionText(opt);
             // break
         }
+        this.currentQuestionIndex++;
+    }
 
+    putQuestionDataToUI(question: Question) {
+        currentCountDown.set({
+            duration: SCENE_CONFIG.ROUND_DURATION,
+            startTime: Date.now()
+        })
+        currentQuestion.set({
+            title: this.currentQuestionIndex + 1 + '',
+            desc: question.description
+        })
 
     }
 
-
+    clearOldQuestion() {
+        console.log("clear clearOldQuestion")
+        for (let i = 0; i < this.clouds.length; i++) {
+            this.clouds[i].destroy();
+        }
+        this.clouds = [];
+    }
     // BACKGROUND - INFINITE MOVING MANAGER
 
-    startBackGround() {
-        // this.stars = this.add.image(400, 300, "star");
-        // this.stars.setCollideWorldBounds(true);
+    async startTheGame() {
+
+        let numberOfRound = SCENE_CONFIG.NUMBER_OF_ROUND;
+
+        await this.randomlyPutCould();
+        setTimeout(() => {
+            this.clearOldQuestion();
+        }, SCENE_CONFIG.ROUND_DURATION * 1000)
+
+        const gameRoundInterval = setInterval(async () => {
+            numberOfRound--;
+
+            await this.randomlyPutCould();
+
+            setTimeout(() => {
+                this.clearOldQuestion();
+                if (numberOfRound === 0) {
+                    clearInterval(gameRoundInterval);
+                    this.showGameResult()
+                }
+            }, SCENE_CONFIG.ROUND_DURATION * 1000)
+
+        }, SCENE_CONFIG.ROUND_DURATION * 1000 + SCENE_CONFIG.BREAK_DURATION * 1000)
+    }
+    showGameResult() {
+        this.scene.stop();
+        infoModalStore.showInfoModal('sjet mtjk', () => {
+            adminPageVisibilityStore.set(true)
+        })
+        console.log("GAME END")
     }
 
     update(time: number, delta: number): void {
@@ -355,6 +447,11 @@ export class CloudShootGameScene extends Scene {
 
     }
 
+    increaseUIScore() {
+        this.currentScore += 10;
+        currentScore.set(this.currentScore);
+    }
+
     onBulletsHitClouds(cloud: any, bullet: any) {
         // onBulletsHitClouds(cloud: Cloud, bullet: Bullet) {
         // bullet.destroy();
@@ -373,17 +470,25 @@ export class CloudShootGameScene extends Scene {
         bullet.body.stop();
         bullet.setGravityY(-300);
 
+
         isCorrectOption(1).then((isAnswer) => {
 
             const rand = Math.floor(Math.random() * 3);
             console.log("Rand", rand)
             if (rand === 0) {
                 bullet.destroy();
-                cloud.destroy();
+                cloud.playAnimation(CloudAnimationMove.CORRECT);
+                this.increaseUIScore()
+
+
             } else {
                 bullet.destroy();
+                cloud.playAnimation(CloudAnimationMove.WRONG);
                 this.markOverLap.set(cloud.currentTexture, false);
             }
+            setTimeout(() => {
+                cloud.destroy();
+            }, 200)
         })
 
         // cloud.getBody().stop();

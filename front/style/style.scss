@@ -3,6 +3,12 @@
    License: none (public domain)
 */
 
+// === BEGIN variable
+
+$hover-scale: 1.05;
+
+// === END variable
+
 html,
 body,
 div,
@@ -133,7 +139,7 @@ table {
 }
 body {
     overflow: hidden;
-    font-family: "Manrope";
+    font-family: "LilitaOne";
 }
 body button:focus,
 body img:focus,
@@ -151,6 +157,19 @@ body .message-info {
     text-align: center;
 }
 
+.icon {
+    pointer-events: auto;
+    &:hover {
+        cursor: pointer;
+        transform: scale($hover-scale);
+    }
+    img {
+        display: block;
+        max-width: 100%;
+        max-height: 100%;
+    }
+}
+
 // BEGIN COMMON
 .btn {
     pointer-events: auto;
@@ -161,7 +180,7 @@ body .message-info {
     transition-duration: 0.2s;
     &:hover {
         cursor: pointer;
-        transform: scale(1.05);
+        transform: scale($hover-scale);
     }
     align-items: center;
 }

@@ -1,7 +1,8 @@
 interface AnimationData {
     key: string;
-    frameRate: number;
+    frameRate?: number;
     repeat?: number;
+    duration?: number;// should not use duration if there is multiple frame in animation
     frameModel: string; //todo use an enum
     frames: number[];
 }
@@ -90,7 +91,6 @@ export class Cloud extends Container {
                 body.setSize(CLOUD_SIZE.width, CLOUD_SIZE.height); //edit the hitbox to better match the character model
                 // this.getBody().setOffset(0, 35);
 
-
                 // disable gravity of clouds
                 const gY = GAME_CONFIG.physics?.arcade?.gravity?.y;
                 if (gY) {
@@ -148,12 +148,10 @@ export class Cloud extends Container {
             }
             this.currentSprite = sprite;
 
-            console.log("DOOOOO")
-
+            console.log("add sprite with texture's key: ", texture)
             this.add(sprite);
 
-
-            this.getPlayerAnimations(texture).forEach((d) => {
+            this.getAnimations(texture).forEach((d) => {
                 console.log("define: ", d.key);
 
                 this.scene.anims.create({
@@ -161,12 +159,13 @@ export class Cloud extends Container {
                     frames: this.scene.anims.generateFrameNumbers(d.frameModel, { frames: d.frames }),
                     frameRate: d.frameRate,
                     repeat: d.repeat,
+                    duration: d.duration,
                 });
             });
 
 
 
-            sprite.on('animationcomplete', (anim: any, frame: any) => this.onAnimationComplete(anim.key as string), sprite);
+            // sprite.on('animationcomplete', (anim: any, frame: any) => this.onAnimationComplete(anim.key as string), sprite);
             // Needed, otherwise, animations are not handled correctly.
             if (this.scene) {
                 this.scene.sys.updateList.add(sprite);
@@ -175,11 +174,11 @@ export class Cloud extends Container {
         }
     }
 
-    public onAnimationComplete(key: string) {
-        if (key == this.currentTexture + CloudAnimationMove.NORMAL) {
-            this.playAnimation(CloudAnimationMove.NORMAL)
-        }
-    }
+    // public onAnimationComplete(key: string) {
+    //     if (key == this.currentTexture + CloudAnimationMove.NORMAL) {
+    //         this.playAnimation(CloudAnimationMove.NORMAL)
+    //     }
+    // }
 
     public setOptionText(option: Option) {
         this.dataOption = option;
@@ -201,35 +200,34 @@ export class Cloud extends Container {
         this.addToUpdateList();
     }
 
-    private getPlayerAnimations(name: string): AnimationData[] {
+    private getAnimations(name: string): AnimationData[] {
         return [
             {
                 key: `${name}-${CloudAnimationMove.NORMAL}`,
                 frameModel: name,
                 frames: [0],
-                frameRate: 10,
-                repeat: -1,
+                repeat: 0,
             },
             {
                 key: `${name}-${CloudAnimationMove.WRONG}`,
                 frameModel: name,
-                frames: [0, 2, 0],
-                frameRate: 10,
-                repeat: -1,
+                frames: [2, 0],
+                frameRate: 2,
+                repeat: 0,
             },
             {
                 key: `${name}-${CloudAnimationMove.CORRECT}`,
                 frameModel: name,
-                frames: [0, 1, 0],
-                frameRate: 10,
-                repeat: -1,
+                frames: [1, 0],
+                frameRate: 2,
+                repeat: 1,
             },
             {
                 key: `${name}-${CloudAnimationMove.HIT}`,
                 frameModel: name,
-                frames: [0, 4, 0],
+                frames: [4, 0],
                 frameRate: 10,
-                repeat: 1,
+                repeat: 2,
             },
 
 
@@ -259,5 +257,9 @@ export class Cloud extends Container {
     public move(x: number, y: number) {
         const body = this.getBody();
         body.setVelocity(x, y);
+    }
+    public destroy(fromScene?: boolean | undefined): void {
+        this.currentSprite?.destroy(fromScene);
+        super.destroy(fromScene)
     }
 }

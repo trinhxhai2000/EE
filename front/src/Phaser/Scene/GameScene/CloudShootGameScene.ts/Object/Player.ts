@@ -124,12 +124,12 @@ export class Player extends Container {
             })
             .catch(() => {
 
-                return lazyLoadPlayerCharacterTextures(scene.load, ['dude']).then((textures) => {
-                    console.warn("Can't load the expected textures, loaded the default textures !")
-                    this.addPlayerTextures(textures);
-                    // this.invisible = false;
-                    // this.playAnimation(direction, actionStatus);
-                });
+                // return lazyLoadPlayerCharacterTextures(scene.load, ['dude']).then((textures) => {
+                //     console.warn("Can't load the expected textures, loaded the default textures !")
+                //     this.addPlayerTextures(textures);
+                //     // this.invisible = false;
+                //     // this.playAnimation(direction, actionStatus);
+                // });
             })
             .finally(() => {
                 this.playerTexturePromise = undefined;
@@ -177,7 +177,7 @@ export class Player extends Container {
                 throw new Error("texture not found texture: " + texture);
             }
             const sprite = new Sprite(this.scene, 0, 0, texture, frame);
-            sprite.setDepth(200);
+            // sprite.setDepth(200);
             this.add(sprite);
 
             this.getPlayerAnimations(texture).forEach((d) => {
@@ -282,6 +282,7 @@ export class Player extends Container {
     }
 
     public playAnimation(direction: PlayerAnimationDirections): void {
+        // console.log("Player play animtion", direction)
         // if (this.invisible) return;
         for (const [texture, sprite] of this.playerSprites.entries()) {
             if (!sprite.anims) {

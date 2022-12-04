@@ -34,6 +34,10 @@
         adminPageVisibilityStore.set(true);
     }
 
+    function goToMain() {
+        closeLogin();
+    }
+
     authApi
         .getLoginUser()
         .then((res) => {
@@ -43,7 +47,7 @@
                     throw new Error("Something went wrong!");
                 }
                 currentUser.set(res.data as User);
-                goToAdminPage();
+                goToMain();
             }
         })
         .catch((err) => {
