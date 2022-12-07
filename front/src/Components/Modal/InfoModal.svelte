@@ -1,7 +1,7 @@
 <script lang="ts">
     import type { Unsubscriber } from "svelte/store";
     import { onDestroy, onMount } from "svelte";
-    import { infoModalStore, showInfoModal } from "../../Stores/modalStore";
+    import { infoModalStore, showInfoModal } from "../../Stores/ModalStore";
 
     function closeModal() {
         infoModalStore.confirm();

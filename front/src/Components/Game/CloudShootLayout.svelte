@@ -11,6 +11,7 @@
         currentQuestion,
         currentCountDown,
         type CountDownData,
+        isStartGame,
     } from "../../Stores/GameActionStore/CloudShootGameStore";
 
     import { onMount } from "svelte";
@@ -20,6 +21,8 @@
     let isExpandQuestion = true;
     let intervalCountDown: NodeJS.Timeout | null = null;
     let currentRemSec: number | null = null;
+
+    let isStart = false;
 
     onMount(() => {
         currentScore.set(0);
@@ -38,11 +41,45 @@
         }, 200);
     });
 
-    try {
-        gameManager.startScene(CloudShootGameSceneName);
-        // gameManager.startSceneByGame(game, VowelSoundsGameSceneName);
-    } catch (err) {
-        console.log("startScene err", err);
+    function startTheGame() {
+        isStartGame.set(true);
+        // openfullscreen();
+        // document.requestFullscreen();
+        // document.webkitRequestFullscreen();
+        // screen.orientation.lock("landscape");
+
+        try {
+            gameManager.startScene(CloudShootGameSceneName);
+            // gameManager.startSceneByGame(game, VowelSoundsGameSceneName);
+        } catch (err) {
+            console.log("startScene err", err);
+        }
+    }
+
+    function openfullscreen() {
+        // Trigger fullscreen
+        const docElmWithBrowsersFullScreenFunctions =
+            document.documentElement as HTMLElement & {
+                mozRequestFullScreen(): Promise<void>;
+                webkitRequestFullscreen(): Promise<void>;
+                msRequestFullscreen(): Promise<void>;
+            };
+
+        if (docElmWithBrowsersFullScreenFunctions.requestFullscreen) {
+            docElmWithBrowsersFullScreenFunctions.requestFullscreen();
+        } else if (docElmWithBrowsersFullScreenFunctions.mozRequestFullScreen) {
+            /* Firefox */
+            docElmWithBrowsersFullScreenFunctions.mozRequestFullScreen();
+        } else if (
+            docElmWithBrowsersFullScreenFunctions.webkitRequestFullscreen
+        ) {
+            /* Chrome, Safari and Opera */
+            docElmWithBrowsersFullScreenFunctions.webkitRequestFullscreen();
+        } else if (docElmWithBrowsersFullScreenFunctions.msRequestFullscreen) {
+            /* IE/Edge */
+            docElmWithBrowsersFullScreenFunctions.msRequestFullscreen();
+        }
+        // this.isfullscreen = true;
     }
 
     function toggleQuestion() {
@@ -70,50 +107,78 @@
 <svelte:window on:keydown={onKeyDown} />
 
 <div class="cloudshoot-layout">
-    <div class="score-panel">
-        Scores: {$currentScore ? $currentScore : "---"} points
-    </div>
-    <div class="time-panel">
-        {currentRemSec ? formatTime(currentRemSec) : "---"} s
-    </div>
-    <div class="question-modal">
-        <div
-            class={"question-container" +
-                (isExpandQuestion
-                    ? " question-container-expand"
-                    : " question-container-close")}
-        >
-            {#if isExpandQuestion}
-                <div class="icon icon-close" on:click={toggleQuestion}>
-                    <img src={iconClose} alt="icon-close" />
-                </div>
-
-                <div class="question-content">
-                    <div class="title">
-                        {`Question #${
-                            $currentQuestion ? $currentQuestion.title : "---"
-                        }: `}
-                    </div>
-
-                    <div class="desc">
-                        {$currentQuestion ? $currentQuestion.desc : "---"}
-                    </div>
-                </div>
-            {:else}
-                <div class="icon icon-question" on:click={toggleQuestion}>
-                    <img src={iconQuestion} alt="icon-question" />
-                </div>
-            {/if}
+    {#if !$isStartGame}
+        <div class="start-layout">
+            <div class="btn play-button" on:click={startTheGame}>Play</div>
         </div>
-    </div>
+    {:else}
+        <div class="play-layout">
+            <div class="score-panel">
+                Scores: {$currentScore ? $currentScore : "---"} points
+            </div>
+            <div class="time-panel">
+                {currentRemSec ? formatTime(currentRemSec) : "---"} s
+            </div>
+            <div class="question-modal">
+                <div
+                    class={"question-container" +
+                        (isExpandQuestion
+                            ? " question-container-expand"
+                            : " question-container-close")}
+                >
+                    {#if isExpandQuestion}
+                        <div class="icon icon-close" on:click={toggleQuestion}>
+                            <img src={iconClose} alt="icon-close" />
+                        </div>
+
+                        <div class="question-content">
+                            <div class="title">
+                                {`Question #${
+                                    $currentQuestion
+                                        ? $currentQuestion.title
+                                        : "---"
+                                }: `}
+                            </div>
+
+                            <div class="desc">
+                                {$currentQuestion
+                                    ? $currentQuestion.desc
+                                    : "---"}
+                            </div>
+                        </div>
+                    {:else}
+                        <div
+                            class="icon icon-question"
+                            on:click={toggleQuestion}
+                        >
+                            <img src={iconQuestion} alt="icon-question" />
+                        </div>
+                    {/if}
+                </div>
+            </div>
+        </div>
+    {/if}
 </div>
 
 <style lang="scss">
+    @import "../../../style/breakpoints.scss";
+    @import "../../../style/common.scss";
     .cloudshoot-layout {
-        position: relative;
-        border: 10px solid blue;
+        position: absolute;
+
+        @include debugCloudShootLayout(10px, blue);
+        padding: 10px;
+
         width: 100%;
         height: 100%;
+        .start-layout,
+        .play-layout {
+            position: relative;
+            @include debugCloudShootLayout(5px, pink);
+
+            width: 100%;
+            height: 100%;
+        }
     }
 
     $p-time-w: 100px;
@@ -126,9 +191,20 @@
         background-color: rgba(black, 0.6);
         color: white;
     }
+    .start-layout {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        .play-button {
+            background-color: cyan;
+            width: 200px;
+            height: 120px;
+            font-size: 30px;
+            border-radius: 20px;
+        }
+    }
 
     .time-panel {
-        /* border: 5px solid red; */
         @include grey-trans-bg();
         border-radius: 5px;
         width: $p-time-w;
@@ -160,7 +236,6 @@
     }
 
     .question-modal {
-        /* border: 10px solid cyan; */
         height: auto;
         width: 100%;
         position: absolute;
@@ -172,7 +247,7 @@
         /* align-items: center; */
         .question-container {
             background-color: white;
-            border: 4px solid green;
+            @include debugCloudShootLayout(4px, green);
             border-radius: 10px;
             transition: 0.5s;
             .icon-question {
@@ -185,7 +260,6 @@
                 height: 50px;
             }
             .question-content {
-                /* border: 4px solid green; */
                 padding: 10px 30px;
                 .title {
                     font-size: 22px;

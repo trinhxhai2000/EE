@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { waitingModalStore } from "../../Stores/modalStore";
+    import { waitingModalStore } from "../../Stores/ModalStore";
 
     function onKeyDown(e: KeyboardEvent) {
         e.preventDefault();

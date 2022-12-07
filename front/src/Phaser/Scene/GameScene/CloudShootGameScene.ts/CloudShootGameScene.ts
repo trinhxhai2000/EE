@@ -23,9 +23,9 @@ import type { Option } from "../../../../interface/entity/Option";
 import { Cloud, CloudAnimationMove } from "./Object/Cloud";
 import { CLOUD_RESOURCES } from "../../../Entity/PlayerTextures";
 
-import { currentScore, currentCountDown, currentQuestion } from "../../../../Stores/GameActionStore/CloudShootGameStore";
+import { currentScore, currentCountDown, currentQuestion, isStartGame } from "../../../../Stores/GameActionStore/CloudShootGameStore";
 import { GAME_CONFIG } from "../../../../main";
-import { infoModalStore } from "../../../../Stores/modalStore";
+import { infoModalStore } from "../../../../Stores/ModalStore";
 import { adminPageVisibilityStore } from "../../../../Stores/LoginVisibilityStore";
 
 export interface Rectangle {
@@ -37,8 +37,8 @@ export interface Rectangle {
 
 export const SCENE_CONFIG = {
     NUMBER_OF_ROUND: 2,
-    ROUND_DURATION: 1,
-    BREAK_DURATION: 1,
+    ROUND_DURATION: 20,
+    BREAK_DURATION: 2,
 }
 
 export class CloudShootGameScene extends Scene {
@@ -364,10 +364,10 @@ export class CloudShootGameScene extends Scene {
     }
     showGameResult() {
         this.scene.stop();
-        infoModalStore.showInfoModal('sjet mtjk', () => {
-            adminPageVisibilityStore.set(true)
+        const text = `Congratulation!!! You get ${this.currentScore} points!!`
+        infoModalStore.showInfoModal(text, () => {
+            isStartGame.set(false)
         })
-        console.log("GAME END")
     }
 
     update(time: number, delta: number): void {

@@ -12,3 +12,4 @@ export interface CountDownData {
 export const currentQuestion = writable<GameQuestion | null>(null);
 export const currentScore = writable<number | null>(null);
 export const currentCountDown = writable<CountDownData | null>(null);
+export const isStartGame = writable<boolean | null>(null);

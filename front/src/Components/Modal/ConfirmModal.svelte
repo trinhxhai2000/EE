@@ -2,7 +2,7 @@
     import {
         confirmModalStore,
         showConfirmModal,
-    } from "../../Stores/modalStore";
+    } from "../../Stores/ModalStore";
 
     function yesConfirm() {
         confirmModalStore?.yesConfirm();

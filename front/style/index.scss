@@ -8,11 +8,11 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: black;
+    // background-color: black;
     // [todo]: replace by some nice simple background
     canvas {
         display: block;
-        background-color: orange;
+        // background-color: orange;
         // do not use border, it will make scroll effect appear
         // border: 5px solid cyan;
     }

@@ -4,7 +4,8 @@
 <div class="entry-container" />
 
 <style scss="scss">
+    @import "../../../style/common.scss";
     .entry-container {
-        border: 1px solid black;
+        @include debug(1px, black);
     }
 </style>

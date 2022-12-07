@@ -51,12 +51,14 @@
 </div>
 
 <style lang="scss">
+    @import "../../../style/breakpoints.scss";
+    @import "../../../style/common.scss";
     #login-btn {
     }
     .login-main {
-        border: 3px solid red;
+        @include debug(3px, red);
     }
     .login-container {
-        border: 3px solid cyan;
+        @include debug(3px, cyan);
     }
 </style>

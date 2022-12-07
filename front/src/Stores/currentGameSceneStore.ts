@@ -1,6 +1,5 @@
 import { writable } from "svelte/store";
-import { EntryScene } from "../Phaser/Scene/EntryScene";
-import { SelectMapScene } from "../Phaser/Scene/SelectMapScene";
-export const currentGameSceneStore = writable<
-    EntryScene | SelectMapScene | null
->(null);
+export enum LIST_GAME {
+    CLOUD_SHOOT
+}
+export const currentGameStore = writable<LIST_GAME | null>(null);

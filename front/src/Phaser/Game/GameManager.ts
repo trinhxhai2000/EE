@@ -1,6 +1,3 @@
-import { get } from "svelte/store";
-import { currentGameSceneStore } from "../../Stores/currentGameSceneStore";
-
 export type MapType = "speaking-map";
 export class MapTypeConstant {
     static SELECT_MAP: MapType = "speaking-map";
@@ -22,8 +19,6 @@ export class GameManager {
                 `Can't start the Scene ${sceneName} because game was false`
             );
         }
-
-
 
         console.log("game.events READY EVENT 2");
 
