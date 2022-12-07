@@ -22,10 +22,12 @@
     function closeRegister() {
         adminPageVisibilityStore.set(false);
     }
+    
     function goToLogin() {
         loginVisibilityStore.set(true);
         closeRegister();
     }
+
 </script>
 
 <div class="login-main">

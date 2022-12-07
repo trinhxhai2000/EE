@@ -37,7 +37,7 @@ export interface Rectangle {
 
 export const SCENE_CONFIG = {
     NUMBER_OF_ROUND: 2,
-    ROUND_DURATION: 20,
+    ROUND_DURATION: 15,
     BREAK_DURATION: 2,
 }
 
@@ -112,6 +112,9 @@ export class CloudShootGameScene extends Scene {
     }
 
     create() {
+
+        this.lastFired = Date.now() - 2000;
+        this.input.keyboard.on('keydown-S', () => this.handleShootingKeyPress(), this);
 
         this.canvas = this.game.canvas;
         if (!this.canvas) {
@@ -221,6 +224,9 @@ export class CloudShootGameScene extends Scene {
                     undefined,
                     this
                 );
+                console.log("SUCCESS RESET OVERLAP CLOUD AND BULLET!",{clouds:this.clouds});
+            }else{
+                console.log("FAIL RESET OVERLAP CLOUD AND BULLET!");
             }
         }
 
@@ -291,7 +297,7 @@ export class CloudShootGameScene extends Scene {
             }
         }
 
-        this.setUpOverlapBallAndCloud();
+        // /this.setUpOverlapBallAndCloud();
 
         this.putOptionToClouds();
     }
@@ -336,13 +342,14 @@ export class CloudShootGameScene extends Scene {
         }
         this.clouds = [];
     }
-    // BACKGROUND - INFINITE MOVING MANAGER
 
+    // BACKGROUND - INFINITE MOVING MANAGER
     async startTheGame() {
 
         let numberOfRound = SCENE_CONFIG.NUMBER_OF_ROUND;
 
         await this.randomlyPutCould();
+        this.setUpOverlapBallAndCloud();
         setTimeout(() => {
             this.clearOldQuestion();
         }, SCENE_CONFIG.ROUND_DURATION * 1000)
@@ -351,6 +358,7 @@ export class CloudShootGameScene extends Scene {
             numberOfRound--;
 
             await this.randomlyPutCould();
+            this.setUpOverlapBallAndCloud();
 
             setTimeout(() => {
                 this.clearOldQuestion();
@@ -372,7 +380,7 @@ export class CloudShootGameScene extends Scene {
 
     update(time: number, delta: number): void {
 
-        this.input.keyboard.on('keydown-S', () => this.handleShootingKeyPress(time), this);
+        // this.input.keyboard.on('keydown-S', () => this.handleShootingKeyPress(time), this);
 
 
         const arrow = this.player?.getArrow();
@@ -420,13 +428,16 @@ export class CloudShootGameScene extends Scene {
 
     }
 
-    handleShootingKeyPress(time: number) {
+    handleShootingKeyPress(time: number = 0) {
         const bullets = this.player?.getBullets();
         const arrow = this.player?.getArrow();
         const player = this.player;
 
-        if (time - this.lastFired > 1000) {
 
+        const tnow = Date.now();
+        // console.log("shoot",{tnow,pre:this.lastFired, del: tnow-this.lastFired})
+        if (tnow - this.lastFired > 1000) {
+            this.lastFired = tnow;
 
             if (bullets && arrow && player) {
                 const bullet = bullets.get();
@@ -436,7 +447,7 @@ export class CloudShootGameScene extends Scene {
                     // this.add.image(player.x, player.y, "star");
 
                     // bullet.fire(this.arrow.x, this.arrow.y, this.arrow.x + 300, this.arrow.y - 300);
-                    this.lastFired = time;
+                    // this.lastFired = time;
                     console.log("Do sShooting ", time)
                     bullet.fireToAngle(player.x, player.y, arrow.rotation);
                 }

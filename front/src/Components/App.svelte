@@ -19,10 +19,12 @@
 
     import { flashStore } from "../Stores/FlashStore";
     import Footer from "./Footer/Footer.svelte";
-    import { currentGameStore } from "../Stores/CurrentGameSceneStore";
+    import { currentGameStore, LIST_GAME } from "../Stores/CurrentGameSceneStore";
     export let game: Phaser.Game | undefined;
 
     console.log("App component start!");
+    // loginVisibilityStore.set(false);
+    // currentGameStore.set(LIST_GAME.CLOUD_SHOOT)
 </script>
 
 <div class="main">
@@ -52,8 +54,9 @@
         {:else if $adminPageVisibilityStore}
             <AdminPage />
         {:else}
-            <Main {game} /> <!--Game goes here !-->
+            <Main {game} />
         {/if}
+
     </div>
 
     {#if $currentGameStore === null}
