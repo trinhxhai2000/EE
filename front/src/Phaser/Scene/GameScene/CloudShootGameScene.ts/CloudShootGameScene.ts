@@ -26,7 +26,6 @@ import { CLOUD_RESOURCES } from "../../../Entity/PlayerTextures";
 import { currentScore, currentCountDown, currentQuestion, isStartGame } from "../../../../Stores/GameActionStore/CloudShootGameStore";
 import { GAME_CONFIG } from "../../../../main";
 import { infoModalStore } from "../../../../Stores/ModalStore";
-import { adminPageVisibilityStore } from "../../../../Stores/LoginVisibilityStore";
 
 export interface Rectangle {
     leftX: number,
@@ -224,8 +223,8 @@ export class CloudShootGameScene extends Scene {
                     undefined,
                     this
                 );
-                console.log("SUCCESS RESET OVERLAP CLOUD AND BULLET!",{clouds:this.clouds});
-            }else{
+                console.log("SUCCESS RESET OVERLAP CLOUD AND BULLET!", { clouds: this.clouds });
+            } else {
                 console.log("FAIL RESET OVERLAP CLOUD AND BULLET!");
             }
         }

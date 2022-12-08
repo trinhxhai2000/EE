@@ -1,9 +1,7 @@
 <script lang="ts">
     import { authApi } from "../../api/authApi";
-    import {
-        loginVisibilityStore,
-        adminPageVisibilityStore,
-    } from "../../Stores/LoginVisibilityStore";
+
+    import { navigate } from "svelte-routing";
 
     let username: string;
     let password: string;
@@ -19,15 +17,11 @@
         });
     }
 
-    function closeRegister() {
-        adminPageVisibilityStore.set(false);
-    }
-    
-    function goToLogin() {
-        loginVisibilityStore.set(true);
-        closeRegister();
-    }
+    function closeRegister() {}
 
+    function goToLogin() {
+        navigate("/login");
+    }
 </script>
 
 <div class="login-main">
@@ -43,10 +37,10 @@
                 <input type="password" bind:value={password} />
             </div>
         </div>
-        <div class="btn" on:click={register}>
+        <div class="btn-effect" on:click={register}>
             <span>Register</span>
         </div>
-        <div class="btn" on:click={goToLogin}>
+        <div class="btn-effect" on:click={goToLogin}>
             <span>Login</span>
         </div>
     </div>

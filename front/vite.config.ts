@@ -7,10 +7,10 @@ export default defineConfig({
   plugins: [
     svelte({
       preprocess: sveltePreprocess(),
-  }),
+    }),
     pluginRewriteAll(),
   ],
   server: {
-		port: 4000,
-	}
+    port: 4000,
+  }
 })

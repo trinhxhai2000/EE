@@ -1,13 +1,10 @@
 <script lang="ts">
     import { authApi } from "../../api/authApi";
     import { currentUser } from "../../Stores/CurrentUserStore";
-    import {
-        loginVisibilityStore,
-        adminPageVisibilityStore,
-        registerVisibilityStore,
-    } from "../../Stores/LoginVisibilityStore";
     import type { User } from "../../interface/entity/User";
     import { flashStore } from "../../Stores/FlashStore";
+    import { navigate } from "svelte-routing";
+    import { userSession } from "../../Stores/UserSessionStore";
 
     let username: string;
     let password: string;
@@ -18,26 +15,24 @@
             console.log("authApi.login res", res);
             if (res.success) {
                 flashStore.showSuccessFlash("Login successful!");
+                userSession.set({ username: "txhai12" });
                 goToMain();
             }
         });
     }
-    function closeLogin() {
-        loginVisibilityStore.set(false);
-    }
+    function closeLogin() {}
     function goToRegister() {
-        console.log("goToRegister");
-        closeLogin();
-        registerVisibilityStore.set(true);
+        navigate("/register");
     }
     function goToAdminPage() {
-        console.log("goToAdminPage");
-        closeLogin();
-        adminPageVisibilityStore.set(true);
+        // console.log("goToAdminPage");
+        // closeLogin();
+        // adminPageVisibilityStore.set(true);
+        navigate("/admin");
     }
 
     function goToMain() {
-        closeLogin();
+        // navigate("/");
     }
 
     authApi
@@ -49,6 +44,7 @@
                     throw new Error("Something went wrong!");
                 }
                 currentUser.set(res.data as User);
+                userSession.set({ username: "txhai12" });
                 flashStore.showSuccessFlash("Login successful!");
                 goToMain();
             }

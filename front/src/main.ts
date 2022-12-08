@@ -100,9 +100,9 @@ game.events.addListener('ready', () => {
     console.log("game.events READY EVENT");
     app = new App({
         target: HtmlUtils.getElementByIdOrFail("app"),
-        props: {
-            game: game,
-        },
+        // props: {
+        //     game: game,
+        // },
     });
 })
 

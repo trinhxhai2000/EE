@@ -1,25 +1,42 @@
 <script lang="ts">
+    import { userSession } from "../../Stores/UserSessionStore";
     import logo from "../images/logo.png";
-    import headerPage from "../images/header-page.png";
+    import ProfileButton from "../ProfileButton/ProfileButton.svelte";
+    import { navigate } from "svelte-routing";
+    function onClickLogo() {
+        navigate("/");
+    }
+
+    function onClickLeaderBoard() {
+        navigate("/");
+    }
 </script>
 
 <div class="header">
     <div class="prefix-header">
-        <div class="logo-container">
+        <div class="logo-container" on:click={onClickLogo}>
             <img src={logo} alt="" />
         </div>
         <div class="current-page">
             <span> Login </span>
         </div>
         <div class="link-container">
-            <div class="link raw-btn">Home</div>
-            <div class="link raw-btn">Record</div>
+            <div class="link raw-btn" on:click={onClickLogo}>Home</div>
+            <div class="link raw-btn-md" on:click={onClickLeaderBoard}>
+                LeaderBoard
+            </div>
         </div>
     </div>
 
     <div class="suffix-header">
-        <!-- <div class="user-profile">User profile</div> -->
-        <div class="raw-btn">Resgister</div>
+        {#if $userSession}
+            <div class="user-profile-wrapper">
+                <ProfileButton />
+            </div>
+            <!-- <div class="raw-btn">Logout</div> -->
+        {:else}
+            <div class="raw-btn">Register</div>
+        {/if}
     </div>
 </div>
 
@@ -65,8 +82,8 @@
         background-size: contain;
         background-repeat: no-repeat;
         color: white;
-        width: 165px;
-        height: 60px;
+        width: 190px;
+        height: 70px;
         padding: 10px 20px;
         display: flex;
         justify-content: center;
@@ -79,8 +96,10 @@
         justify-content: flex-start;
         align-items: center;
         height: 100%;
-        gap: 20px;
+        gap: 10px;
         .link {
+            height: 50px;
+            /* width: 100px; */
         }
     }
 
@@ -90,10 +109,9 @@
         align-items: center;
     }
 
-    .user-profile {
-        justify-self: flex-end;
-        align-self: flex-end;
-
-        /* align-self: flex-end; */
+    .user-profile-wrapper {
+        /* @include debugHeader(4px, red); */
+        max-width: 300px;
+        max-height: 100px;
     }
 </style>

@@ -171,19 +171,23 @@ body .message-info {
 }
 
 // BEGIN COMMON
-.btn {
+.btn-effect {
     pointer-events: auto;
-    width: 120px;
-    height: 50px;
     display: flex;
     justify-content: center;
-    transition-duration: 0.2s;
+    align-items: center;
 
+    transition-duration: 0.2s;
     &:hover {
         cursor: pointer;
         transform: scale($hover-scale);
     }
-    align-items: center;
+}
+
+.btn-bg-prop {
+    background-size: contain;
+    background-position: center !important;
+    background-repeat: no-repeat;
 }
 
 .raw-btn {
@@ -201,6 +205,33 @@ body .message-info {
     align-items: center;
 
     background-image: url("./images/button.png");
+    background-size: contain;
+    background-position: center !important;
+    background-repeat: no-repeat;
+
+    transition-duration: 0.2s;
+
+    &:hover {
+        cursor: pointer;
+        transform: scale($hover-scale);
+    }
+}
+
+.raw-btn-md {
+    pointer-events: auto;
+    width: 180px;
+    height: 60px;
+
+    padding: 10px 25px;
+    font-size: 22px;
+
+    font-weight: bold;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background-image: url("./images/button-md.png");
     background-size: contain;
     background-position: center !important;
     background-repeat: no-repeat;

@@ -1,10 +1,7 @@
 <script lang="ts">
+    import { Router, links, Route } from "svelte-routing";
     import { waitingModalStore } from "../Stores/ModalStore";
-    import {
-        loginVisibilityStore,
-        adminPageVisibilityStore,
-        registerVisibilityStore,
-    } from "../Stores/LoginVisibilityStore";
+
     import ConfirmModal from "./Modal/ConfirmModal.svelte";
     import InfoModal from "./Modal/InfoModal.svelte";
     import WaitingModal from "./Modal/WaitingModal.svelte";
@@ -19,49 +16,73 @@
 
     import { flashStore } from "../Stores/FlashStore";
     import Footer from "./Footer/Footer.svelte";
-    import { currentGameStore, LIST_GAME } from "../Stores/CurrentGameSceneStore";
+    import {
+        currentGameStore,
+        LIST_GAME,
+    } from "../Stores/CurrentGameSceneStore";
+    import NotFound from "./NotFound/NotFound.svelte";
+    import Profile from "./ProfileButton/ProfileButton.svelte";
     export let game: Phaser.Game | undefined;
 
     console.log("App component start!");
-    // loginVisibilityStore.set(false);
-    // currentGameStore.set(LIST_GAME.CLOUD_SHOOT)
 </script>
 
 <div class="main">
-    <ConfirmModal />
-    <InfoModal />
-
     <!-- <Main {game} /> -->
-    <Flasher />
-
-    {#if $currentGameStore === null}
-        <Header />
-    {/if}
-
-    {#if $currentComponentModalStore != null}
-        <ModalPlaceHolder />
-    {/if}
-
-    {#if $waitingModalStore.length > 0}
-        <WaitingModal />
-    {/if}
-
-    <div class="page-container">
-        {#if $loginVisibilityStore}
-            <Login />
-        {:else if $registerVisibilityStore}
-            <Register />
-        {:else if $adminPageVisibilityStore}
-            <AdminPage />
-        {:else}
-            <Main {game} />
+    <Router url="" basepath="/">
+        <!-- BEGIN MODAL-->
+        <ConfirmModal />
+        <InfoModal />
+        {#if $currentComponentModalStore != null}
+            <ModalPlaceHolder />
         {/if}
 
-    </div>
+        {#if $waitingModalStore.length > 0}
+            <WaitingModal />
+        {/if}
+        <!-- END MODAL-->
 
-    {#if $currentGameStore === null}
-        <Footer />
-    {/if}
+        <!-- <WaitingModal /> -->
+        {#if $currentGameStore === null}
+            <Header />
+        {/if}
+
+        <Flasher />
+
+        <!-- BEGIN CONTENT_PAGE -->
+
+        <div class="page-container">
+            <Route path="/">
+                <Main {game} />
+            </Route>
+
+            <Route path="/login">
+                <Login />
+            </Route>
+
+            <Route path="/register">
+                <Register />
+            </Route>
+
+            <Route path="/profile">
+                <!-- <Profile /> -->
+            </Route>
+        </div>
+
+        <!-- <Route path="/launchpad/:id" let:params>
+            <LaunchPad id={params.id} />
+        </Route> -->
+
+        <Route path="/*">
+            <NotFound />
+        </Route>
+
+        <!-- END CONTENT_PAGE -->
+
+        {#if $currentGameStore === null}
+            <Footer />
+        {/if}
+    </Router>
 </div>
 
 <style lang="scss">

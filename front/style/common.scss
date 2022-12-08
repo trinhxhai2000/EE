@@ -24,6 +24,9 @@ $page-padding: 40px 50px;
 @mixin debugHeader($size, $color) {
     border: $size solid $color;
 }
+@mixin debugProfile($size, $color) {
+    border: $size solid $color;
+}
 
 // function
 @mixin hoverEffect() {

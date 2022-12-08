@@ -20,10 +20,10 @@
     {/if}
 </div>
 
-<!-- <div class="flash success-flash">
-    sjet
-</div> -->
 <style lang="scss">
+    @import "../../../style/breakpoints.scss";
+    @import "../../../style/common.scss";
+
     .flash-container {
         top: 30px;
         position: absolute;
@@ -35,6 +35,7 @@
         justify-content: center;
         align-items: center;
         width: 100%;
+        top: $header-height + 10px;
     }
     .flash {
         width: 95%;
@@ -49,8 +50,9 @@
         align-items: center;
     }
     .success-flash {
-        // background-color: rgba($color: #8eff77, $alpha: 0.9);
+        background-color: rgba($color: #8eff77, $alpha: 0.8);
         background-color: #8eff77;
+        /* opacity: 0.8; */
     }
     .fail-flash {
         background-color: #ff7668;
