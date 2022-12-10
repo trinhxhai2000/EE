@@ -7,8 +7,8 @@
     import { userSession } from "../../Stores/UserSessionStore";
     import { navigate } from "svelte-routing";
     import { get } from "svelte/store";
-    import { replace } from "svelte-preprocess";
     import { onMount } from "svelte";
+    import { headerDataStore } from "../../Stores/HeaderStore";
     // game
     export let game: Phaser.Game | undefined;
 
@@ -17,16 +17,17 @@
     }
 
     onMount(() => {
-        // if (get(userSession) === null) {
-        //     console.log("userSession", $userSession);
-        //     navigate("/login");
-        // }
-        // userSession.subscribe((val) => {
-        //     if (val === null) {
-        //         console.log("userSession", val);
-        //         navigate("/login");
-        //     }
-        // });
+        if (get(userSession) === null) {
+            console.log("userSession", $userSession);
+            navigate("/login");
+        }
+        userSession.subscribe((val) => {
+            if (val === null) {
+                console.log("userSession", val);
+                navigate("/login");
+            }
+        });
+        headerDataStore.setHeaderTitle("Home");
     });
 </script>
 

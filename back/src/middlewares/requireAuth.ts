@@ -20,10 +20,8 @@ export const requireAuth = async (
       );
       const user = decoded as { username: string };
 
-      console.log("require Auth ", user)
       req.body.username = user.username;
 
-      console.log('pass by req_cookies_token', user);
       next();
       return;
     } catch (error) {
@@ -34,7 +32,6 @@ export const requireAuth = async (
 
   const authHeader = req.headers.authorization || '';
 
-  console.log("authHeader", authHeader)
 
   const authHeaderParts = authHeader.split(' ');
 
@@ -48,8 +45,6 @@ export const requireAuth = async (
   }
 
   const token = authHeaderParts[1];
-
-  console.log('token', token);
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET as string);

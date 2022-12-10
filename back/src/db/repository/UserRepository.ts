@@ -31,9 +31,82 @@ export class UserRepositoryController {
         return user;
     }
 
-    // public async getAllUser(): Promise<User[]> {
-    //     return this._userRepository.find();
-    // }
+    public async getUserWithRole(username: string): Promise<User> {
+        const user = await this._userRepository.findOneBy({ username });
+        if (!user) {
+            throw new Error("Not found user");
+        }
+        return user;
+    }
+
+    public async changePass(username: string, password: string, newPassword: string): Promise<User> {
+
+        const user = await this._userRepository.findOneBy({ username });
+
+        if (!user) {
+            throw new Error("Not found user");
+        }
+
+        const isMatchPassword = await this.checkPassword(password, user.hashPassword);
+        if (!isMatchPassword) {
+            if (!user) {
+                throw new Error("Current password not correct");
+            }
+        }
+
+        const hashPassword = await this.genHashPassword(newPassword);
+
+        user.hashPassword = hashPassword;
+        this._userRepository.save(user);
+
+        return user;
+    }
+
+    public async adminChangePass(username: string, newPassword: string): Promise<User> {
+
+        const user = await this._userRepository.findOneBy({ username });
+
+        if (!user) {
+            throw new Error("Not found user");
+        }
+
+        const hashPassword = await this.genHashPassword(newPassword);
+
+        user.hashPassword = hashPassword;
+        this._userRepository.save(user);
+
+        return user;
+    }
+    public async updateRole(username: string, role: string): Promise<User> {
+
+        const user = await this._userRepository.findOneBy({ username });
+
+        if (!user) {
+            throw new Error("Not found user");
+        }
+        user.role = role;
+        this._userRepository.save(user);
+
+        return user;
+    }
+
+    public async getAllUser(): Promise<User[]> {
+        return this._userRepository.find();
+    }
+
+    public async paging(from: number, to: number, search: string): Promise<User[]> {
+        return this._userRepository.createQueryBuilder("user")
+            .where("user.username like :condition", { condition: "%" + search.toLowerCase() + "%" })
+            .skip(from).take(to - from).getMany();
+    }
+
+    public async countWithCondition(condition: string): Promise<number> {
+        const cnt = await this._userRepository.createQueryBuilder("user")
+            .where("user.username like :condition", { condition: "%" + condition.toLowerCase() + "%" }).getCount();
+        return cnt;
+    }
+
+
 
     // public async findUserByWalletAddress(
     //     walletAddress: string

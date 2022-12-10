@@ -3,12 +3,16 @@
     import logo from "../images/logo.png";
     import ProfileButton from "../ProfileButton/ProfileButton.svelte";
     import { navigate } from "svelte-routing";
+    import { headerData, headerDataStore } from "../../Stores/HeaderStore";
     function onClickLogo() {
         navigate("/");
     }
 
     function onClickLeaderBoard() {
         navigate("/");
+    }
+    function onClickLogin() {
+        navigate("/login");
     }
 </script>
 
@@ -18,7 +22,7 @@
             <img src={logo} alt="" />
         </div>
         <div class="current-page">
-            <span> Login </span>
+            <span> {$headerData ? $headerData.title : ""} </span>
         </div>
         <div class="link-container">
             <div class="link raw-btn" on:click={onClickLogo}>Home</div>
@@ -35,7 +39,7 @@
             </div>
             <!-- <div class="raw-btn">Logout</div> -->
         {:else}
-            <div class="raw-btn">Register</div>
+            <div class="raw-btn" on:click={onClickLogin}>Login</div>
         {/if}
     </div>
 </div>
@@ -50,8 +54,12 @@
         justify-content: space-between;
         padding: 10px;
         height: $header-height;
+
         div {
             /* @include debugHeader(2px, green); */
+        }
+        * {
+            @include no-select();
         }
     }
 

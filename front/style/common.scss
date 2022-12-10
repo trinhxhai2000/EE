@@ -2,6 +2,8 @@ $primary-color: #3f48cc;
 $secondary-color: grey;
 $tertiary-color: black;
 
+$error-color: #d13b3b;
+
 // App layout variable
 $header-height: 100px;
 $footer-height: 80px;
@@ -9,6 +11,7 @@ $footer-height: 80px;
 // Page layout variable
 
 $page-padding: 40px 50px;
+$page-header-font-size: 30px;
 
 @mixin debug($size, $color) {
     //border: $size solid $color;
@@ -28,9 +31,22 @@ $page-padding: 40px 50px;
     border: $size solid $color;
 }
 
+@mixin debugChangePass($size, $color) {
+    border: $size solid $color;
+}
+
 // function
 @mixin hoverEffect() {
     &:hover {
         cursor: pointer;
     }
+}
+
+@mixin no-select() {
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Old versions of Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently  supported by Chrome, Edge, Opera and Firefox */
 }

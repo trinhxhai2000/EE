@@ -3,8 +3,8 @@
     import { gameManager } from "../../Phaser/Game/GameManager";
     import { CloudShootGameSceneName } from "../../Phaser/Scene/GameScene/CloudShootGameScene.ts/CloudShootGameScene";
 
-    import iconQuestion from "../images/icon/icon-question.svg";
-    import iconClose from "../images/icon/icon-close.svg";
+    import iconQuestion from "../images/icon/icon-ques.png";
+    import iconClose from "../images/icon/icon-close.png";
 
     import {
         currentScore,

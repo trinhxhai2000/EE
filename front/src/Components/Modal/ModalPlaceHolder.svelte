@@ -1,13 +1,20 @@
 <script lang="ts">
+    import { onMount } from "svelte";
+    import { get } from "svelte/store";
+    import {
+        ComponentModalType,
+        currentComponentModalStore,
+    } from "../../Stores/ComponentModal";
+    import EditUserModal from "../Admin/User/UserEditPage.svelte";
 </script>
 
 <div class="modal-place-holder">
     <div class="modal-wrapper">
         <!--MapType-->
         <!-- {$currentComponentModalStore} -->
-        <!-- {#if $currentComponentModalStore == ComponentModalType.ADD_MAP_TYPE}
-            <AddMapTypeModal />
-        {/if} -->
+        {#if $currentComponentModalStore == ComponentModalType.EDIT_USER}
+            <!-- <AddMapTypeModal /> -->
+        {/if}
     </div>
 </div>
 

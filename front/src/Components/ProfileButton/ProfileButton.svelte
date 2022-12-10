@@ -1,12 +1,48 @@
 <script lang="ts">
+    import { onMount } from "svelte";
+    import { navigate } from "svelte-routing";
+    import { get } from "svelte/store";
+    import { authApi } from "../../api/authApi";
+    import { USER_ROLE } from "../../interface/api/UserInterfaces";
+    import { flashStore } from "../../Stores/FlashStore";
+    import { userSession } from "../../Stores/UserSessionStore";
     import iconArrow from "../images/icon/icon-arrow.png";
     import iconProfile from "../images/icon/icon-profile.png";
 
-    let isOpenDropDown = true;
+    let isOpenDropDown = false;
     let username = "trinhxhai";
+    let isAdmin = true;
+
+    onMount(() => {
+        const user = get(userSession);
+        if (user) {
+            username = user.username;
+            isAdmin = user.role == USER_ROLE.ADMIN;
+        }
+    });
 
     function clickProfile() {
         isOpenDropDown = !isOpenDropDown;
+    }
+
+    function logout() {
+        authApi.logout().then((res) => {
+            console.log("logout response", res);
+            if (res.success === true) {
+                flashStore.showSuccessFlash("Logout successful !");
+            } else {
+                flashStore.showErrorFlash(res.message ?? "");
+            }
+        });
+    }
+    function goToChangePassword() {
+        isOpenDropDown = false;
+        navigate("/changepassword");
+    }
+
+    function goToAdmin() {
+        isOpenDropDown = false;
+        navigate("/admin");
     }
 </script>
 
@@ -26,9 +62,15 @@
     </div>
     {#if isOpenDropDown}
         <div class="drop-down-container">
+            {#if isAdmin}
+                <div class="option" on:click={goToAdmin}>Admin</div>
+            {/if}
+
             <div class="option">Profile</div>
-            <div class="option">Change password</div>
-            <div class="option">Logout</div>
+            <div class="option" on:click={goToChangePassword}>
+                Change password
+            </div>
+            <div class="option" on:click={logout}>Logout</div>
         </div>
     {/if}
 </div>
@@ -40,6 +82,7 @@
         position: relative;
         width: auto;
         height: auto;
+        z-index: 9999;
         /* @include debugProfile(3px, pink); */
     }
     .profile-btn {
@@ -90,7 +133,8 @@
     .drop-down-container {
         position: absolute;
         top: calc(100% + 3px);
-        left: -20px;
+        /* left: -40px; */
+        right: 0px;
         background-color: white;
         padding: 3px;
         width: 220px;

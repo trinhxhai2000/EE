@@ -19,7 +19,7 @@ function createInfoModalStore() {
     let currentUser: string | null = null;
 
     return {
-        setHeaderTitle(tle: string, callback: BtnCallBack) {
+        setHeaderTitle(tle: string, callback: BtnCallBack = undefined) {
             const preData = get(headerData);
             preData.title = tle;
             headerData.set(preData);

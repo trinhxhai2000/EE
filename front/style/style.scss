@@ -251,9 +251,64 @@ body .message-info {
 }
 // END COMMON
 
+// MODAL LOADER
+@keyframes mymove {
+    0% {
+        bottom: 40px;
+    }
+    50% {
+        bottom: 30px;
+    }
+    100% {
+        bottom: 40px;
+    }
+}
+
+$img-anim-w: 484px;
+.modal-loader-1 {
+    width: 121px;
+    height: 121px;
+    // background:  url("./images/modal-loader.png") no-repeat 0 0%;
+    background: url("./images/modal-loader.png") no-repeat 0 0%;
+    animation: moveX 0.5s steps(4) infinite;
+}
+
+@-webkit-keyframes moveX {
+    from {
+        background-position-x: 0px;
+    }
+    to {
+        background-position-x: -$img-anim-w;
+    }
+}
+@-moz-keyframes moveX {
+    from {
+        background-position-x: 0px;
+    }
+    to {
+        background-position-x: -$img-anim-w;
+    }
+}
+@-o-keyframes moveX {
+    from {
+        background-position-x: 0px;
+    }
+    to {
+        background-position-x: -$img-anim-w;
+    }
+}
+@keyframes moveX {
+    from {
+        background-position-x: 0px;
+    }
+    to {
+        background-position-x: -$img-anim-w;
+    }
+}
+
 /*BEGIN MODAL ZONE*/
 .modal-container {
-    border: 5px solid pink;
+    // border: 5px solid pink;
 }
 
 /*END MODAL ZONE*/
@@ -287,4 +342,13 @@ canvas {
 
 .field-text {
     font-size: 20px;
+}
+
+.no-select {
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Old versions of Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently  supported by Chrome, Edge, Opera and Firefox */
 }

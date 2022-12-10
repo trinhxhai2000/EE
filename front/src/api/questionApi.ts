@@ -1,38 +1,101 @@
 import { ApiError } from "./ApiError";
 import axios from "axios";
 import { API_URL } from "../Enum/EnvironmentVariable";
-import type { User } from "../interface/entity/User";
 import axiosClient from "./axiosClient";
+import * as qs from "qs";
 import type { CommonResponse } from "../interface/api/CommonApiInterfaces";
-import type { Question } from "../interface/entity/Question";
+import { userSession, userSessionStore } from "../Stores/UserSessionStore";
+import { get } from "svelte/store";
+import type { AddResult } from "../interface/CommonInterfaces";
+import type { StringOptions } from "sass";
+import type { QuestionItem, QuestionTableData } from "../interface/api/QuestionInterfaces";
 
+// auth api don't use token header so it will use its own axios client
+// instead of "axiosClient.ts"
 class QuestionApi {
-    public suffixURL = '/question';
     constructor() { }
 
-    public async paging(): Promise<Question[]> {
-        const response = await axiosClient.get(
-            this.suffixURL + "/getAll",
+    paging = (
+        page: any,
+        pageSize: any,
+        text: any,
+        sorting: any
+    ): Promise<QuestionTableData> => {
+
+        const from = page * pageSize;
+        const to = from + pageSize;
+
+        return new Promise((resolve, reject) => {
+            axiosClient.get("/question/paging", {
+                params: {
+                    from: from,
+                    to: to,
+                    search: text
+                }
+            }).then(
+                res => {
+                    resolve(res.data as QuestionTableData);
+                }
+            ).catch(err => {
+                reject(err);
+            })
+        });
+
+    };
+
+    public async add(description: string): Promise<CommonResponse> {
+        const data = {
+            description
+        };
+        const response = await axiosClient.post(
+            "/question/add",
+            qs.stringify(data),
             {
                 headers: {
                     // "Content-Type": "application/x-www-form-urlencoded",
                 },
+
             }
         );
-        console.log("getAll question response", response);
-        return response.data as Question[];
+
+        const result = response.data as CommonResponse;
+        return result;
     }
 
-    public async isCorrectOption(questionId: number, optionId: number): Promise<boolean> {
-        return new Promise((resolve, reject) => {
-            setTimeout(function () {
-                if (Math.random() * 10 < 3) {
-                    resolve(true);
-                } else {
-                    resolve(false);
-                }
-            }, 2000);
-        });
+    public async get(id: number): Promise<CommonResponse> {
+        const data = { id };
+        const response = await axiosClient.post(
+            "/question/get",
+            qs.stringify(data),
+            {
+                headers: {
+                    // "Content-Type": "application/x-www-form-urlencoded",
+                },
+
+            }
+        );
+
+        const result = response.data as CommonResponse;
+
+        return result;
+    }
+
+    public async update(id: number, description: string): Promise<CommonResponse> {
+        const data = { id, description };
+        const response = await axiosClient.post(
+            "/question/update",
+            qs.stringify(data),
+            {
+                headers: {
+                    // "Content-Type": "application/x-www-form-urlencoded",
+                },
+
+            }
+        );
+
+        const result = response.data as CommonResponse;
+
+        return result;
     }
 
 }

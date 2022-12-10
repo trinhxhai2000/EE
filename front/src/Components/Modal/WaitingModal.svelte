@@ -10,7 +10,7 @@
 <svelte:window on:keydown={onKeyDown} />
 <div class="container-main">
     <div class="waiting-modal">
-        <div class="modal-loader" />
+        <div class="modal-loader-1" />
         <section class="title">
             <span style="padding: 0 20px;">{$waitingModalStore}</span>
         </section>

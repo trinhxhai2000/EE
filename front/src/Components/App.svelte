@@ -22,6 +22,13 @@
     } from "../Stores/CurrentGameSceneStore";
     import NotFound from "./NotFound/NotFound.svelte";
     import Profile from "./ProfileButton/ProfileButton.svelte";
+    import ChangePassword from "./UserComponents/ChangePassword/ChangePassword.svelte";
+    import ProtectedRoute from "./ProtectedRoute/ProtectedRoute.svelte";
+    import AdminRoute from "./AdminRoute/AdminRoute.svelte";
+    import UserPage from "./Admin/User/UserPage.svelte";
+    import UserEditPage from "./Admin/User/UserEditPage.svelte";
+    import QuestionAddingPage from "./Admin/Question/QuestionAddingPage.svelte";
+    import QuestionEditPage from "./Admin/Question/QuestionEditPage.svelte";
     export let game: Phaser.Game | undefined;
 
     console.log("App component start!");
@@ -56,6 +63,7 @@
                 <Main {game} />
             </Route>
 
+            <!--User-->
             <Route path="/login">
                 <Login />
             </Route>
@@ -67,15 +75,25 @@
             <Route path="/profile">
                 <!-- <Profile /> -->
             </Route>
+            <ProtectedRoute path="/changepassword" component={ChangePassword} />
+            <AdminRoute path="/admin" component={AdminPage} />
+            <AdminRoute path="/admin/user/:username" component={UserEditPage} />
+
+            <AdminRoute path="/admin/question" component={QuestionAddingPage} />
+            <AdminRoute
+                path="/admin/question/:id"
+                component={QuestionEditPage}
+            />
+
+            <!-- <AdminRoute path="/changepassword" component={ChangePassword} /> -->
+            <Route path="/*">
+                <NotFound />
+            </Route>
         </div>
 
         <!-- <Route path="/launchpad/:id" let:params>
             <LaunchPad id={params.id} />
         </Route> -->
-
-        <Route path="/*">
-            <NotFound />
-        </Route>
 
         <!-- END CONTENT_PAGE -->
 
@@ -93,7 +111,7 @@
         width: 100%;
         height: 100%;
         /* @include debug(5px, blue); */
-        overflow-y: auto;
+        /* overflow-y: auto; */
     }
     .page-container {
         width: 96%;

@@ -3,6 +3,7 @@ import { writable } from "svelte/store";
 export enum ComponentModalType {
     ADD_QUESTION,
     EDIT_QUESTION,
+    EDIT_USER
 }
 
 export const currentComponentModalStore = writable<ComponentModalType | null>(

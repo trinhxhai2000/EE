@@ -1,19 +1,22 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from "typeorm"
 
 @Entity()
-export class Authorize {
+export class Option {
     @PrimaryGeneratedColumn()
     id: number
 
     @Column()
-    table: string
+    questionId: number
 
     @Column()
-    permission: string
+    description: string
+
+    @Column()
+    isAnswer: boolean
 
     @CreateDateColumn()
-    createdDate: Date;
+    createdDate: Date
 
     @UpdateDateColumn()
-    updatedDate: Date;
+    updateDate: Date
 }

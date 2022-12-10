@@ -5,6 +5,7 @@ import { AppRouter } from "./AppRouter";
 import "./controllers/LoginController";
 import "./controllers/TaskController";
 import "./controllers/QuestionController";
+import "./controllers/UserController";
 import { errorHandlerMiddleware } from "./middlewares/errorHandler";
 import "reflect-metadata";
 

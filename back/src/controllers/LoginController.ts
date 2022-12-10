@@ -9,6 +9,7 @@ import { StatusCodes } from "http-status-codes";
 import { AUTH_COOKIE_KEY } from "../AppConst";
 import { requireAuth } from "../middlewares/requireAuth";
 import { userRepositoryController } from "../db/repository/UserRepository";
+import { ROLES } from "../db/entity/User";
 
 @controller("/api/v1")
 export class LoginController {
@@ -17,23 +18,21 @@ export class LoginController {
     @post("/login")
     async login(req: Request, res: Response) {
         const { username, password } = req.body;
-        console.log("login", { username, password });
+        // console.log("login", { username, password });
 
         try {
             const user = await userRepositoryController.getUser(username);
 
             const isMatchPassword = await userRepositoryController.checkPassword(password, user.hashPassword);
 
-            console.log("login", { hashPass: user.hashPassword, password, isMatchPassword })
+            // console.log("login", { hashPass: user.hashPassword, password, isMatchPassword })
             if (isMatchPassword) {
                 // user = null ?
-                console.log("fuck ?", { x: process.env.JWT_SECRET })
                 const payload = { username: user.username };
                 const token = jwt.sign(payload, process.env.JWT_SECRET as string, {
                     expiresIn: '30d',
                 });
 
-                console.log('Set cookie nek:', user);
 
                 res.cookie(AUTH_COOKIE_KEY, token, {
                     maxAge: 3000 * 9000,
@@ -46,6 +45,7 @@ export class LoginController {
 
                 res.status(StatusCodes.OK).json({
                     success: true,
+                    data: { username, role: user.role }
                     // data: payload,
                 });
             } else {
@@ -58,9 +58,20 @@ export class LoginController {
 
         } catch (err) {
             // console.log("err", err);
-            res.status(StatusCodes.OK).json({
-                success: false,
-            });
+            if (err instanceof Error) {
+                if (err.message === 'Not found user') {
+                    res.status(StatusCodes.OK).json({
+                        success: false,
+                        message: 'Wrong username or password!',
+                    });
+                }
+
+            } else {
+                res.status(StatusCodes.OK).json({
+                    success: false,
+                });
+            }
+
         }
 
     }
@@ -74,8 +85,6 @@ export class LoginController {
 
         const hashPassword = await userRepositoryController.genHashPassword(password);
 
-        console.log("register", { username, password, hashPassword });
-        // console.log("req ", req.body);
 
         if (!username || !password) {
             res.status(StatusCodes.OK).json({
@@ -84,9 +93,21 @@ export class LoginController {
             return;
         }
 
+
+        if (password.length < 5) {
+            res.status(StatusCodes.OK).json({
+                success: false,
+                message: 'Password should have at least 5 character!'
+            });
+            return;
+        }
+
+        const role = ROLES.USER;
+
         const newUser = {
             id: -1,
             username,
+            role,
             hashPassword,
             createdDate: new Date(),
             updatedDate: new Date(),
@@ -102,7 +123,6 @@ export class LoginController {
                 user,
             });
         } catch (err) {
-            console.log("userRepositoryController.addNewUser err", err);
             res.status(StatusCodes.OK).json({
                 success: false,
             });
@@ -114,29 +134,66 @@ export class LoginController {
     @get("/getLoginUser")
     async getLoginUser(req: Request, res: Response) {
         const username: string = req.body.username;
-        console.log("getLoginUser", req.body);
         const user = await userRepositoryController.getUser(username);
-        console.log("find user", user);
         if (user) {
             res.status(200).json({
                 success: true,
-                data: { username: user.username, id: user.id },
+                data: { username: user.username, id: user.id, role: user.role },
             });
         } else {
             res.status(200).json({ success: true, user: null });
         }
     }
 
-    // @use(requireAuth)
-    // @asyncWrapper(true)
-    // @post('/logout')
-    // async logout(req: Request, res: Response) {
-    //   res.clearCookie(AUTH_COOKIE_KEY, {
-    //     sameSite: 'none',
-    //     secure: true,
-    //     httpOnly: true,
-    //     path: '/',
-    //   });
-    //   res.status(200).json({ success: 200 });
-    // }
+    @use(requireAuth)
+    @asyncWrapper(true)
+    @post('/logout')
+    async logout(req: Request, res: Response) {
+        res.clearCookie(AUTH_COOKIE_KEY, {
+            sameSite: 'none',
+            secure: true,
+            httpOnly: true,
+            path: '/',
+        });
+        res.status(200).json({ success: true });
+    }
+
+    @use(requireAuth)
+    @asyncWrapper(true)
+    @post('/changepass')
+    async changepass(req: Request, res: Response) {
+        const username: string = req.body.username;
+        const password: string = req.body.password;
+        const newPassword: string = req.body.newPassword;
+
+        try {
+            const user = await userRepositoryController.changePass(username, password, newPassword);
+            if (user) {
+                res.status(StatusCodes.OK).json({
+                    message: 'Change password success!',
+                    success: true,
+                });
+            } else {
+                res.status(StatusCodes.OK).json({
+                    message: 'Something went wrong, please try again later!',
+                    success: false,
+                });
+            }
+
+
+
+        } catch (err) {
+            // console.log("err", err);
+            if (err instanceof Error) {
+                res.status(StatusCodes.OK).json({
+                    success: false,
+                    message: err.message
+                });
+            } else {
+                throw new Error('WTF???');
+            }
+
+        }
+    }
+
 }
