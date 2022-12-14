@@ -1,19 +1,51 @@
 <script lang="ts">
-    import { onMount } from "svelte";
-    import { get } from "svelte/store";
+    import { onDestroy, onMount } from "svelte";
     import {
         ComponentModalType,
         currentComponentModalStore,
     } from "../../Stores/ComponentModal";
-    import EditUserModal from "../Admin/User/UserEditPage.svelte";
+    import AddChoiceModal from "../Admin/Question/Choice/AddChoiceModal.svelte";
+    import EditChoiceModal from "../Admin/Question/Choice/EditChoiceModal.svelte";
+
+    let app: HTMLElement | null = null;
+
+    onMount(() => {
+        app = document.getElementById("app");
+        if (app) {
+            app.scroll({
+                top: 0,
+                left: 0,
+                behavior: "smooth",
+            });
+        }
+        window.addEventListener("scroll", disableScroll, true);
+    });
+
+    onDestroy(() => {
+        window.removeEventListener("scroll", disableScroll, true);
+    });
+
+    function disableScroll(e: Event) {
+        if (app) {
+            app.scroll({
+                top: 0,
+                left: 0,
+                behavior: "smooth",
+            });
+        }
+    }
 </script>
 
 <div class="modal-place-holder">
     <div class="modal-wrapper">
         <!--MapType-->
         <!-- {$currentComponentModalStore} -->
-        {#if $currentComponentModalStore == ComponentModalType.EDIT_USER}
-            <!-- <AddMapTypeModal /> -->
+        {#if $currentComponentModalStore === ComponentModalType.ADD_CHOICE}
+            <AddChoiceModal />
+        {/if}
+
+        {#if $currentComponentModalStore === ComponentModalType.EDIT_CHOICE}
+            <EditChoiceModal />
         {/if}
     </div>
 </div>

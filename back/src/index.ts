@@ -6,6 +6,7 @@ import "./controllers/LoginController";
 import "./controllers/TaskController";
 import "./controllers/QuestionController";
 import "./controllers/UserController";
+import "./controllers/ChoiceController";
 import { errorHandlerMiddleware } from "./middlewares/errorHandler";
 import "reflect-metadata";
 

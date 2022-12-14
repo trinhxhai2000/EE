@@ -3,16 +3,16 @@ import axios from "axios";
 import { API_URL } from "../Enum/EnvironmentVariable";
 import axiosClient from "./axiosClient";
 import * as qs from "qs";
-import type { CommonResponse } from "../interface/api/CommonApiInterfaces";
+import type { CommonResponse, GetAllResponse } from "../interface/api/CommonApiInterfaces";
 import { userSession, userSessionStore } from "../Stores/UserSessionStore";
 import { get } from "svelte/store";
 import type { AddResult } from "../interface/CommonInterfaces";
 import type { StringOptions } from "sass";
-import type { QuestionItem, QuestionTableData } from "../interface/api/QuestionInterfaces";
+import type { ChoiceItem, ChoiceTableData } from "../interface/api/ChoiceInterfaces";
 
 // auth api don't use token header so it will use its own axios client
 // instead of "axiosClient.ts"
-class QuestionApi {
+class ChoiceApi {
     constructor() { }
 
     paging = (
@@ -20,13 +20,13 @@ class QuestionApi {
         pageSize: any,
         text: any,
         sorting: any
-    ): Promise<QuestionTableData> => {
+    ): Promise<ChoiceTableData> => {
 
         const from = page * pageSize;
         const to = from + pageSize;
 
         return new Promise((resolve, reject) => {
-            axiosClient.get("/question/paging", {
+            axiosClient.get("/choice/paging", {
                 params: {
                     from: from,
                     to: to,
@@ -34,7 +34,7 @@ class QuestionApi {
                 }
             }).then(
                 res => {
-                    resolve(res.data as QuestionTableData);
+                    resolve(res.data as ChoiceTableData);
                 }
             ).catch(err => {
                 reject(err);
@@ -43,12 +43,14 @@ class QuestionApi {
 
     };
 
-    public async add(description: string): Promise<CommonResponse> {
+    public async add(questionId: number, description: string, isAnswer: boolean): Promise<CommonResponse> {
         const data = {
-            description
+            questionId,
+            description,
+            isAnswer
         };
         const response = await axiosClient.post(
-            "/question/add",
+            "/choice/add",
             qs.stringify(data),
             {
                 headers: {
@@ -59,13 +61,31 @@ class QuestionApi {
         );
 
         const result = response.data as CommonResponse;
+        return result;
+    }
+
+    public async getAll(questionId: number): Promise<GetAllResponse<ChoiceItem>> {
+        const data = { questionId };
+        const response = await axiosClient.post(
+            "/choice/getAll",
+            qs.stringify(data),
+            {
+                headers: {
+                    // "Content-Type": "application/x-www-form-urlencoded",
+                },
+
+            }
+        );
+
+        const result = response.data as GetAllResponse<ChoiceItem>;
+
         return result;
     }
 
     public async get(id: number): Promise<CommonResponse> {
         const data = { id };
         const response = await axiosClient.post(
-            "/question/get",
+            "/choice/get",
             qs.stringify(data),
             {
                 headers: {
@@ -80,10 +100,10 @@ class QuestionApi {
         return result;
     }
 
-    public async update(id: number, description: string): Promise<CommonResponse> {
-        const data = { id, description };
+    public async update(id: number, description: string, isAnswer: boolean): Promise<CommonResponse> {
+        const data = { id, description, isAnswer };
         const response = await axiosClient.post(
-            "/question/update",
+            "/choice/update",
             qs.stringify(data),
             {
                 headers: {
@@ -101,7 +121,7 @@ class QuestionApi {
     public async delete(id: number): Promise<CommonResponse> {
         const data = { id };
         const response = await axiosClient.post(
-            "/question/delete",
+            "/choice/delete",
             qs.stringify(data),
             {
                 headers: {
@@ -119,7 +139,7 @@ class QuestionApi {
     public async deleteMany(ids: number[]): Promise<CommonResponse> {
         const data = { ids: ids };
         const response = await axiosClient.post(
-            "/question/delete-many",
+            "/choice/delete-many",
             qs.stringify(data),
             {
                 headers: {
@@ -136,4 +156,4 @@ class QuestionApi {
 
 }
 
-export const questionApi = new QuestionApi();
+export const choiceApi = new ChoiceApi();

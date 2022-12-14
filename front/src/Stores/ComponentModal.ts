@@ -1,9 +1,8 @@
 import { writable } from "svelte/store";
 
 export enum ComponentModalType {
-    ADD_QUESTION,
-    EDIT_QUESTION,
-    EDIT_USER
+    ADD_CHOICE,
+    EDIT_CHOICE
 }
 
 export const currentComponentModalStore = writable<ComponentModalType | null>(
@@ -25,9 +24,11 @@ function createComponentModalStore() {
             return _data;
         },
         closeComponentModal(reload = false) {
+            console.log("closeComponentModal")
             if (_onCloseCallback && reload) {
                 _onCloseCallback();
             }
+            console.log("closeComponentModal")
             currentComponentModalStore.set(null);
         }
     }

@@ -7,10 +7,6 @@
         USER_ROLE,
         type UserItem,
     } from "../../../interface/api/UserInterfaces";
-    import {
-        componentModalStore,
-        currentComponentModalStore,
-    } from "../../../Stores/ComponentModal";
     import { get } from "svelte/store";
     import { flashStore } from "../../../Stores/FlashStore";
     import { navigate } from "svelte-routing";

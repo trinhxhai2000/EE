@@ -25,11 +25,13 @@
 
     import type { QuestionItem } from "../../../interface/api/QuestionInterfaces";
     import { questionApi } from "../../../api/QuestionApi";
-    import {
-        componentModalStore,
-        ComponentModalType,
-    } from "../../../Stores/ComponentModal";
     import { navigate } from "svelte-routing";
+    import { flashStore } from "../../../Stores/FlashStore";
+    import { CommonMessage, ErrorMessage } from "../../../api/ErrorMessage";
+    import {
+        confirmModalStore,
+        waitingModalStore,
+    } from "../../../Stores/ModalStore";
     // import {
     //     componentModalStore,
     //     ComponentModalType,
@@ -98,36 +100,38 @@
     }
 
     function onDeleteRow(id: number) {
-        // console.log("onClickRemove", walletAddress);
-        // if (waitDeleting) {
-        //     return;
-        // }
-        // let callbackYes = () => {
-        //     waitDeleting = true;
-        //     mapTypeApi
-        //         .deleteMapType(id)
-        //         .then((res) => {
-        //             if (res.success) {
-        //                 load(page);
-        //                 flashStore.showSuccessFlash("Successfully deleted !!!");
-        //             } else {
-        //                 flashStore.showErrorFlash(
-        //                     res?.message || "No message return!"
-        //                 );
-        //             }
-        //         })
-        //         .finally(() => {
-        //             // do uncomment, stop loading delete
-        //             waitDeleting = false;
-        //         });
-        // };
-        // let record = rows.find((item) => item.id == id);
-        // let text = `Are you sure to delete mapType ${
-        //     record ? " : " + record.name : ""
-        // } ?`;
-        // confirmModalStore.showConfirmModal(text, callbackYes, () => {
-        //     // console.log("no");
-        // });
+        console.log("onDeleteRow", id);
+        if (waitDeleting) {
+            return;
+        }
+        let callbackYes = () => {
+            waitDeleting = true;
+            waitingModalStore.set("Waiting ... ");
+            questionApi
+                .delete(id)
+                .then((res) => {
+                    if (res.success) {
+                        load(page);
+                        flashStore.showSuccessFlash(
+                            CommonMessage.SUCCESS_DELETED
+                        );
+                    } else {
+                        flashStore.showErrorFlash(
+                            res?.message || ErrorMessage.UNEXPECTED_ERROR
+                        );
+                    }
+                })
+                .finally(() => {
+                    // do uncomment, stop loading delete
+                    waitDeleting = false;
+                    waitingModalStore.set("");
+                });
+        };
+        let record = rows.find((item) => item.id == id);
+        let text = `Are you sure to delete question ?`;
+        confirmModalStore.showConfirmModal(text, callbackYes, () => {
+            // console.log("no");
+        });
     }
 
     function onEditRow(id: number) {
@@ -177,73 +181,45 @@
         // console.log("onSelectRows: ", selectedRows);
     }
 
-    // function onDeleteRows() {
-    //     if (selectedRows.length == 0 || waitDeleting == true) {
-    //         return;
-    //     }
+    function onDeleteRows() {
+        if (selectedRows.length == 0 || waitDeleting == true) {
+            return;
+        }
 
-    //     let callbackYes = () => {
-    //         waitDeleting = true;
+        let callbackYes = () => {
+            waitDeleting = true;
+            waitingModalStore.set("Waiting");
 
-    //         const ids = selectedRows.map((item) => item.id);
+            const ids = selectedRows.map((item) => item.id);
 
-    //         mapTypeApi
-    //             .deleteListMapType(ids)
-    //             .then((res) => {
-    //                 if (res.success) {
-    //                     load(page);
-    //                     resetSelect();
-    //                     // console.log("after delete rows: ", rows);
-    //                     flashStore.showSuccessFlash("Successfully deleted !!!");
-    //                 } else {
-    //                     flashStore.showErrorFlash(
-    //                         res?.message || "No message return!"
-    //                     );
-    //                 }
-    //             })
-    //             .finally(() => {
-    //                 // do uncomment, stop loading delete
-    //                 waitDeleting = false;
-    //             });
-    //     };
+            questionApi
+                .deleteMany(ids)
+                .then((res) => {
+                    if (res.success) {
+                        load(page);
+                        resetSelect();
+                        // console.log("after delete rows: ", rows);
+                        flashStore.showSuccessFlash(
+                            CommonMessage.SUCCESS_DELETED
+                        );
+                    } else {
+                        flashStore.showErrorFlash(
+                            res?.message || "No message return!"
+                        );
+                    }
+                })
+                .finally(() => {
+                    // do uncomment, stop loading delete
+                    waitDeleting = false;
+                    waitingModalStore.set("");
+                });
+        };
 
-    //     let text = `Are you sure to delete ${selectedRows.length} mapTypes ?`;
-    //     confirmModalStore.showConfirmModal(text, callbackYes, () => {});
+        let text = `Are you sure to delete ${selectedRows.length} questions ?`;
+        confirmModalStore.showConfirmModal(text, callbackYes, () => {});
 
-    //     // console.log("onDeleteRows", selectedRows);
-    // }
-
-    // function deleteAllMapType() {
-    //     if (waitDeleting === true) {
-    //         return;
-    //     }
-
-    //     let callbackYes = () => {
-    //         waitDeleting = true;
-    //         mapTypeApi
-    //             .deleteAll()
-    //             .then((res) => {
-    //                 if (res.success) {
-    //                     load(page);
-    //                     resetSelect();
-    //                     // console.log("after delete rows: ", rows);
-    //                     flashStore.showSuccessFlash("Successfully deleted !!!");
-    //                 } else {
-    //                     // alert(res.message);
-    //                     flashStore.showErrorFlash(
-    //                         res?.message || "No message return!"
-    //                     );
-    //                 }
-    //             })
-    //             .finally(() => {
-    //                 // do uncomment, stop loading delete
-    //                 waitDeleting = false;
-    //             });
-    //     };
-
-    //     let text = `Are you sure to delete all map type ?`;
-    //     confirmModalStore.showConfirmModal(text, callbackYes, () => {});
-    // }
+        // console.log("onDeleteRows", selectedRows);
+    }
 
     async function validateAddingBeforeSubmit() {}
 </script>
@@ -257,30 +233,19 @@
             <span class="text"> Add </span>
         </div>
 
-        <!-- <div
-                class={"btn" +
-                    (selectedRows.length == 0 || waitDeleting
-                        ? ""
-                        : " btn-delete-active")}
-                id="btn-delete"
-                on:click={onDeleteRows}
-            >
-                <span class="icon-container">
-                    <img src={iconDelete} alt="" />
-                </span>
-                <span class="text"> Delete </span>
-            </div>
-
-            <div
-                class="btn btn-delete-active"
-                id="btn-delete-all"
-                on:click={deleteAllMapType}
-            >
-                <span class="icon-container">
-                    <img src={iconDelete} alt="" />
-                </span>
-                <span class="text"> Delete All </span>
-            </div> -->
+        <div
+            class={"btn" +
+                (selectedRows.length == 0 || waitDeleting
+                    ? ""
+                    : " btn-delete-active")}
+            id="btn-delete"
+            on:click={onDeleteRows}
+        >
+            <span class="icon-container">
+                <img src={iconTrash} alt="" />
+            </span>
+            <span class="text"> Delete </span>
+        </div>
     </div>
 
     <div class="table-wrapper">
@@ -451,14 +416,15 @@
 
         #btn-delete {
             // height: $item-height;
-            background-color: #7eee4c;
             width: 120px;
             background-color: lightgrey;
+            padding: 3px;
             transition: 0.2s;
         }
 
         .btn-delete-active {
-            background-color: #ff7668 !important;
+            background-color: white !important;
+            border: 3px solid $primary-color;
             &:hover {
                 cursor: pointer;
                 transform: scale(1.05);

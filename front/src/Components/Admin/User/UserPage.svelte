@@ -25,10 +25,6 @@
 
     import type { UserItem } from "../../../interface/api/UserInterfaces";
     import { userApi } from "../../../api/userApi";
-    import {
-        componentModalStore,
-        ComponentModalType,
-    } from "../../../Stores/ComponentModal";
     import { navigate } from "svelte-routing";
     // import {
     //     componentModalStore,

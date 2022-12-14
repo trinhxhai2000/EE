@@ -32,6 +32,10 @@ export class QuestionRepositoryController {
         return await this._repository.delete({ id });
     }
 
+    public async deleteMany(ids: number[]): Promise<DeleteResult> {
+        return await this._repository.delete(ids)
+    }
+
     public async paging(from: number, to: number, search: string): Promise<Question[]> {
         return this._repository.createQueryBuilder("question")
             .where("question.description like :condition", { condition: "%" + search.toLowerCase() + "%" })

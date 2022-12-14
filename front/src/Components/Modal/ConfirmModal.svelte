@@ -35,14 +35,8 @@
                 <h2>{@html title()}</h2>
             </section>
             <section class="information-modal-action">
-                <div
-                    class="button btn-ok"
-                    on:click|preventDefault={yesConfirm}
-                />
-                <div
-                    class="button btn-no"
-                    on:click|preventDefault={noConfirm}
-                />
+                <div class="btn-ok" on:click|preventDefault={yesConfirm} />
+                <div class="btn-no" on:click|preventDefault={noConfirm} />
             </section>
         </div>
     </div>
@@ -53,6 +47,10 @@
 
     h2 {
         font-size: 18px;
+        padding-top: 20px;
+        padding-bottom: 20px;
+        padding-left: 30px;
+        padding-right: 30px;
     }
 
     .container-main {
@@ -87,8 +85,8 @@
 
             section.information-modal-action {
                 display: flex;
-                justify-content: center;
-                gap: 20px;
+                justify-content: space-around;
+                /* gap: 40px; */
             }
         }
         .btn-md {

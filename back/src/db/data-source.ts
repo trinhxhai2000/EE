@@ -1,6 +1,6 @@
 import { DataSource } from "typeorm";
 import { Question } from "./entity/Question";
-import { Option } from "./entity/Option";
+import { Choice } from "./entity/Choice";
 import { User } from "./entity/User";
 
 export const appDataSource = new DataSource({
@@ -12,7 +12,7 @@ export const appDataSource = new DataSource({
     database: "test2",
     synchronize: true,
     logging: false,
-    entities: [User, Question, Option],
+    entities: [User, Question, Choice],
     migrations: [],
     subscribers: [],
 });

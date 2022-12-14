@@ -7,10 +7,10 @@ import jwt from "jsonwebtoken";
 import { StatusCodes } from "http-status-codes";
 
 import { requireAdmin } from "../middlewares/requireAdmin";
-import { questionRepositoryController } from "../db/repository/QuestionRepository";
+import { choiceRepositoryController } from "../db/repository/ChoiceRepository";
 
-@controller('/api/v1/question')
-export class QuestionController {
+@controller('/api/v1/choice')
+export class ChoiceController {
 
     @use(requireAdmin)
     @asyncWrapper(true)
@@ -38,8 +38,8 @@ export class QuestionController {
             search = search.toLocaleLowerCase();
         }
         const [lst, totalCount] = await Promise.all([
-            questionRepositoryController.paging(from, to, search) ?? [],
-            questionRepositoryController.countWithCondition(search)
+            choiceRepositoryController.paging(from, to, search) ?? [],
+            choiceRepositoryController.countWithCondition(search)
         ]);
 
         res.status(200).json(
@@ -57,10 +57,10 @@ export class QuestionController {
     @asyncWrapper(true)
     @post("/add")
     async add(req: Request, res: Response) {
-        const { description } = req.body;
+        const { questionId, description, isAnswer } = req.body;
         console.log("/question/add params", description)
         try {
-            const question = await questionRepositoryController.add(description);
+            const question = await choiceRepositoryController.add(questionId, description, isAnswer === 'true');
             res.status(200).json({ success: true, data: question })
         } catch (err) {
             console.log("/user/get err", err)
@@ -75,8 +75,24 @@ export class QuestionController {
         const { id } = req.body;
         // console.log("/user/get params", { username })
         try {
-            const user = await questionRepositoryController.get(id);
+            const user = await choiceRepositoryController.get(id);
             res.status(200).json({ success: true, data: user })
+        } catch (err) {
+            console.log("/user/get err", err)
+            res.status(200).json({ success: false, message: 'Not found user!' })
+        }
+    }
+
+    // @use(requireAdmin)
+    @asyncWrapper(true)
+    @post("/getAll")
+    async getAll(req: Request, res: Response) {
+        const { questionId } = req.body;
+        // console.log("/user/get params", { username })
+        try {
+            const choices = await choiceRepositoryController.getAll(questionId);
+            // console.log("get all choice ", choices)
+            res.status(200).json({ success: true, data: choices })
         } catch (err) {
             console.log("/user/get err", err)
             res.status(200).json({ success: false, message: 'Not found user!' })
@@ -92,8 +108,8 @@ export class QuestionController {
     @post("/update")
     async update(req: Request, res: Response) {
 
-        const { id, description } = req.body;
-        console.log("user update", { id, description })
+        const { id, description, isAnswer } = req.body;
+        console.log("user update", { id, description, isAnswer })
         if (!id || !description) {
             res.status(200).json({
                 success: false,
@@ -106,7 +122,7 @@ export class QuestionController {
 
             try {
 
-                await questionRepositoryController.update(id, description);
+                await choiceRepositoryController.update(id, description, isAnswer === 'true');
                 res.status(200).json({ success: true })
 
             } catch (err) {
@@ -144,7 +160,7 @@ export class QuestionController {
 
             try {
 
-                await questionRepositoryController.delete(id);
+                await choiceRepositoryController.delete(id);
                 res.status(200).json({ success: true })
 
             } catch (err) {
@@ -183,7 +199,7 @@ export class QuestionController {
 
             try {
 
-                await questionRepositoryController.deleteMany(ids);
+                await choiceRepositoryController.deleteMany(ids);
                 res.status(200).json({ success: true })
 
             } catch (err) {

@@ -11,6 +11,9 @@ import ground from "/game-objects/platform.png";
 import dude from "/game-characters/dude.png";
 
 
+import gameUi from "/game-objects/game-ui.png";
+
+
 import arrow from "/game-objects/arrow.png";
 import bullet from "/game-objects/ball.png";
 import { Bullet } from "./Object/Bullet";
@@ -76,6 +79,7 @@ export class CloudShootGameScene extends Scene {
         this.load.image("background", background);
         this.load.image("ground", ground);
         this.load.image("star", star);
+        this.load.image("game-ui", gameUi);
 
 
         this.load.image("bomb", bomb);
@@ -126,6 +130,11 @@ export class CloudShootGameScene extends Scene {
 
         this.platforms = this.physics.add.staticGroup();
 
+
+        // const gameUI = this.add.image(0, 0, "game-ui");
+        // const ratio = Math.min(this.canvas.height / gameUI.height, this.canvas.width / gameUI.width)
+        // gameUI.setScale(ratio);
+        // gameUI.setOrigin(0, 1).setPosition(0, this.canvas.height).setDepth(999);
 
         /* #region create ground  */
 

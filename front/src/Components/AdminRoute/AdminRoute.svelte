@@ -6,6 +6,7 @@
     import RequireLogin from "../RequireLogin/RequireLogin.svelte";
     import { get } from "svelte/store";
     import NoPermission from "../NoPermission/NoPermission.svelte";
+    import { USER_ROLE } from "../../interface/api/UserInterfaces";
     export let path: string;
     export let component: ComponentType;
 
@@ -47,7 +48,7 @@
     onDestroy(unsubscribe);
 </script>
 
-{#if $userSession}
+{#if $userSession && $userSession.role === USER_ROLE.ADMIN}
     <Route {path} {component} />
 {:else}
     <Route {path} component={NoPermission} />

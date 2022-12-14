@@ -247,9 +247,10 @@
         /* align-items: center; */
         .question-container {
             background-color: white;
-            @include debugCloudShootLayout(4px, green);
+            /* @include debugCloudShootLayout(4px, green); */
             border-radius: 10px;
             transition: 0.5s;
+            padding: 5px;
             .icon-question {
                 width: 50px;
                 height: 50px;
@@ -260,10 +261,11 @@
                 height: 50px;
             }
             .question-content {
-                padding: 10px 30px;
+                padding: 20px 50px;
                 .title {
-                    font-size: 22px;
+                    font-size: 30px;
                     font-weight: bold;
+                    margin-bottom: 10px;
                 }
                 .desc {
                     font-size: 18px;

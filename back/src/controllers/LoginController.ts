@@ -28,7 +28,7 @@ export class LoginController {
             // console.log("login", { hashPass: user.hashPassword, password, isMatchPassword })
             if (isMatchPassword) {
                 // user = null ?
-                const payload = { username: user.username };
+                const payload = { username: user.username, role: user.role };
                 const token = jwt.sign(payload, process.env.JWT_SECRET as string, {
                     expiresIn: '30d',
                 });

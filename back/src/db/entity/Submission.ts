@@ -1,18 +1,15 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from "typeorm"
 
 @Entity()
-export class Option {
+export class Submission {
     @PrimaryGeneratedColumn()
     id: number
 
     @Column()
-    questionId: number
+    historyId: number
 
     @Column()
-    description: string
-
-    @Column()
-    isAnswer: boolean
+    choiceId: number
 
     @CreateDateColumn()
     createdDate: Date

@@ -9,3 +9,11 @@ export interface CommonResponse {
     message?: string;
     data?: any;
 }
+
+
+
+export interface GetAllResponse<T> {
+    success: boolean;
+    message?: string;
+    data?: T[];
+}
