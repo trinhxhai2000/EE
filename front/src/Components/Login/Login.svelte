@@ -57,9 +57,9 @@
             return;
         }
 
-        console.log("login", { username, password });
+        // console.log("login", { username, password });
         authApi.login(username, password).then((res) => {
-            console.log("authApi.login res", res);
+            // console.log("authApi.login res", res);
             if (res.success) {
                 flashStore.showSuccessFlash("Login successful!");
                 goToMain();

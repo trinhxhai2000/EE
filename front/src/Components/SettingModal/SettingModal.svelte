@@ -14,6 +14,7 @@
     import { localUserStore } from "../../Stores/localUserStore";
     import { flashStore } from "../../Stores/FlashStore";
     import { CommonMessage } from "../../api/ErrorMessage";
+    import { gameManager } from "../../Phaser/Game/GameManager";
 
     onMount(() => {
         unsubscriberGameSoundStore = gameSoundStore.subscribe((gameSound) => {
@@ -25,6 +26,10 @@
         lastedSaveVolume = volume;
         gameSoundStore.setMuted(isMuted);
         gameSoundStore.setVolume(volume);
+
+        const localGameResolution = localUserStore.getGameResolution();
+        selectedResolution =
+            localGameResolution !== "" ? localGameResolution : "1920x1080";
     });
 
     let lastedSaveVolume = 0;
@@ -111,6 +116,15 @@
         audioPlayerVol.blur();
         return false;
     }
+    let selectedResolution: any;
+    function changeResolution(e: Event) {
+        console.log("changeResolution", {
+            selectedResolution,
+            e,
+        });
+        gameManager.changeResolution(selectedResolution);
+        localUserStore.setGameResolution(selectedResolution);
+    }
 </script>
 
 <div class="modal-container">
@@ -123,7 +137,12 @@
                 <td class="field-title"> Resolution </td>
                 <td class="field-value">
                     <div class="game-resolution-setting">
-                        <select name="" id="">
+                        <select
+                            name=""
+                            id=""
+                            bind:value={selectedResolution}
+                            on:change={changeResolution}
+                        >
                             <option value="1920x1080">
                                 1920 x 1080 (Recommended)
                             </option>

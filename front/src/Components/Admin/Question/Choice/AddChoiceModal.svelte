@@ -63,7 +63,6 @@
     }
 
     function closeAddingModal() {
-        console.log("closeAddingModal");
         componentModalStore.closeComponentModal();
     }
 </script>

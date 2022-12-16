@@ -8,10 +8,9 @@ export class Bullet extends Phaser.Physics.Arcade.Image {
     fire(fromX: number, fromY: number, toX: number, toY: number) {
         this.setActive(true);
         this.setVisible(true);
-        this.setGravityY(0);
-        this.setGravityX(0);
+        // this.setGravityY(0);
+        // this.setGravityX(0);
         this.refreshBody();
-
 
         // console.log("pos From", {
         //     fromX, fromY

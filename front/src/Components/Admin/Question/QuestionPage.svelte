@@ -100,7 +100,6 @@
     }
 
     function onDeleteRow(id: number) {
-        console.log("onDeleteRow", id);
         if (waitDeleting) {
             return;
         }

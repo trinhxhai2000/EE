@@ -26,11 +26,9 @@ function createComponentModalStore() {
             return _data;
         },
         closeComponentModal(reload = false) {
-            console.log("closeComponentModal")
             if (_onCloseCallback && reload) {
                 _onCloseCallback();
             }
-            console.log("closeComponentModal")
             currentComponentModalStore.set(null);
         }
     }

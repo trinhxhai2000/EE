@@ -2,7 +2,7 @@
     let globalLabels;
 
     export function setLabels(labels) {
-        console.log("Search setLabels", labels);
+        // console.log("Search setLabels", labels);
         globalLabels = labels;
     }
 </script>
@@ -59,7 +59,6 @@
             oldText = text;
             dispatch("search", detail);
         }
-
 
         if (detail.preventDefault !== true) {
             if (detail.text.length === 0) {

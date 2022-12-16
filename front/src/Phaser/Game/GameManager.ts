@@ -1,3 +1,6 @@
+import { gameSizeStore } from "../../Stores/GameSizeStore";
+import { HdpiManager, hdpiManager } from "../../Utils/HdpiManager";
+
 export type MapType = "speaking-map";
 export class MapTypeConstant {
     static SELECT_MAP: MapType = "speaking-map";
@@ -95,6 +98,40 @@ export class GameManager {
     // }
 
     public startTheGame() { }
+    public changeResolution(resolution: string) {
+
+        const navbarH = 111;
+        //"1920x1080" | "1366x768" | "1280x800" | "1024x768"
+        console.log("changeResolution", resolution)
+        if (resolution == "1920x1080") {
+            this.setResolution(1929, 1080 - navbarH);
+            return
+        }
+        if (resolution == "1366x768") {
+            this.setResolution(1366, 768 - navbarH);
+            return
+        }
+
+        if (resolution == "1280x800") {
+            this.setResolution(1280, 800 - navbarH);
+            return
+        }
+
+        if (resolution == "1024x768") {
+            this.setResolution(1024, 768 - navbarH);
+            return
+        }
+        throw new Error(`Can't change to unsupported resolution ${resolution}`)
+    }
+    private setResolution(width: number, height: number) {
+        const { game: gameSize, real: realSize } = hdpiManager.getOptimalGameSize({ width, height });
+        // console.log("setResolution hdpiManager.getOptimalGameSize", {
+        //     from: { width, height },
+        //     result: gameSize
+        // })
+        gameSizeStore.set(gameSize);
+        this.game?.scale.setGameSize(gameSize.width, gameSize.height);
+    }
 }
 
 export const gameManager = new GameManager();

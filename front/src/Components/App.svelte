@@ -30,11 +30,29 @@
     import QuestionAddingPage from "./Admin/Question/QuestionAddingPage.svelte";
     import QuestionEditPage from "./Admin/Question/QuestionEditPage.svelte";
     export let game: Phaser.Game | undefined;
+    import { gameSizeStore } from "../Stores/GameSizeStore";
+    import { onMount } from "svelte";
+    import { localUserStore } from "../Stores/localUserStore";
+    import { gameManager } from "../Phaser/Game/GameManager";
 
     console.log("App component start!");
+    onMount(() => {
+        const localGameResolution = localUserStore.getGameResolution();
+        console.log("localGameResolution", localGameResolution);
+        if (localGameResolution !== "") {
+            gameManager.changeResolution(localGameResolution);
+        }
+    });
 </script>
 
-<div class="main">
+<div
+    class={$currentGameStore === null ? "main-admin" : "main-game"}
+    style={`${
+        $currentGameStore === null
+            ? ""
+            : `background-color: transparent; width: ${$gameSizeStore.width}px; height: ${$gameSizeStore.height}px;`
+    }`}
+>
     <!-- <Main {game} /> -->
     <Router url="" basepath="/">
         <!-- BEGIN MODAL-->
@@ -106,10 +124,22 @@
 <style lang="scss">
     @import "../../style/breakpoints.scss";
     @import "../../style/common.scss";
-    .main {
+    .main-game {
         position: relative;
         width: 100%;
         height: 100%;
+        border: 2px solid $primary-color;
+        background-color: white;
+        /* @include debug(5px, blue); */
+        /* overflow-y: auto; */
+    }
+
+    .main-admin {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        background-color: white;
+        border: 2px solid $primary-color;
         /* @include debug(5px, blue); */
         /* overflow-y: auto; */
     }

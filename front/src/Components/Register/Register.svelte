@@ -51,13 +51,13 @@
             return;
         }
 
-        console.log("register ", {
-            username,
-            password,
-        });
+        // console.log("register ", {
+        //     username,
+        //     password,
+        // });
 
         authApi.register(username, password).then((res) => {
-            console.log("authApi.register res", res);
+            // console.log("authApi.register res", res);
             if (res.success) {
                 flashStore.showSuccessFlash("Login successful!");
                 goToLogin();

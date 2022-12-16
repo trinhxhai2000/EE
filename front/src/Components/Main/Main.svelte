@@ -18,12 +18,12 @@
 
     onMount(() => {
         if (get(userSession) === null) {
-            console.log("userSession", $userSession);
+            // console.log("userSession", $userSession);
             navigate("/login");
         }
         userSession.subscribe((val) => {
             if (val === null) {
-                console.log("userSession", val);
+                // console.log("userSession", val);
                 navigate("/login");
             }
         });

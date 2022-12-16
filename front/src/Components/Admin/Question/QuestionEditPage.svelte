@@ -50,7 +50,6 @@
     onMount(async () => {
         const questionData = await questionApi.get(id);
 
-        console.log("questionData", questionData);
         if (!questionData.success) {
             if (questionData.message) {
                 flashStore.showErrorFlash(questionData.message);
@@ -66,7 +65,6 @@
 
     async function loadChoices() {
         const choicesData = await choiceApi.getAll(id);
-        console.log("loadChoices choicesData", choicesData);
         if (choicesData.data) {
             choicesList = choicesData.data;
         }
@@ -97,7 +95,6 @@
         questionApi
             .update(id, editingQuestion.description)
             .then((res) => {
-                console.log("sjet userApi.update res", res);
                 if (res.success) {
                     flashStore.showSuccessFlash("Successfully updated !");
                 } else {

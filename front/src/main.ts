@@ -10,29 +10,28 @@ type GameConfig = Phaser.Types.Core.GameConfig;
 import WebFontLoaderPlugin from "phaser3-rex-plugins/plugins/webfontloader-plugin.js";
 import { HtmlUtils } from "./Utils/HtmlUtils";
 import { EntryScene } from "./Phaser/Scene/EntryScene";
-import { gameSizeManager } from "./Phaser/Services/GameSizeManager";
 import { SelectMapScene } from "./Phaser/Scene/SelectMapScene";
 import { VowelSoundsGameScene } from "./Phaser/Scene/GameScene/Speaking/VowelSoundsGameScene";
 import { GameManager, gameManager } from "./Phaser/Game/GameManager";
 import { CloudShootGameScene } from "./Phaser/Scene/GameScene/CloudShootGameScene.ts/CloudShootGameScene";
-import { HdpiManager } from "./Utils/HdpiManager";
+import { HdpiManager, hdpiManager } from "./Utils/HdpiManager";
+import { gameSizeStore } from "./Stores/GameSizeStore";
 
 // import dotnet from "dotenv";
 // dotnet.config({ path: __dirname + '/.env' })
 // dotnet.config({ path: '../.env' })
-
-console.log("w window.screen.innerHeight", window.innerHeight);
-console.log("w window.screen.innerWidth", window.innerWidth);
-gameSizeManager.setSize(window.innerHeight, window.innerWidth);
 
 
 const { width, height } = {
     width: window.innerWidth,
     height: window.innerHeight,
 };
-const hdpiManager = new HdpiManager(640 * 480, 196 * 196);
+
+
+
 const { game: gameSize, real: realSize } = hdpiManager.getOptimalGameSize({ width, height });
-console.log("getOptimalGameSize", { game: gameSize, real: realSize })
+// console.log("getOptimalGameSize", { game: gameSize, real: realSize })
+gameSizeStore.set(gameSize);
 
 export const GAME_CONFIG: GameConfig = {
     type: Phaser.CANVAS,
@@ -41,10 +40,10 @@ export const GAME_CONFIG: GameConfig = {
     // url: "",
     // canvas: gameCanvas,
     scale: {
-        mode: Phaser.Scale.CENTER_BOTH,
+        mode: Phaser.Scale.NONE,
         parent: "game-wrapper",
-        width: gameSizeManager.width,
-        height: gameSizeManager.height,
+        width: gameSize.width,
+        height: gameSize.height,
         autoRound: true,
         resizeInterval: 200,
     },

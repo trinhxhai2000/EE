@@ -37,7 +37,6 @@ class CloudShootApi {
 
     public async sendChoice(recordId: number, choiceId: number): Promise<CommonResponse> {
         const data = { recordId, choiceId };
-        console.log('Client send ', data)
         const response = await axiosClient.post(
             "/cloud-shoot/check-choice",
             qs.stringify(data),

@@ -47,8 +47,6 @@ export class Cloud extends Container {
     constructor(scene: Phaser.Scene, x: number, y: number, texture: string) {
         super(scene, x, y);
         this.id = uuidv4();
-        console.log("this.id", this.id)
-        console.log("Cloud class constructor")
         this.scene = scene;
         this.currentTexture = texture;
 
@@ -149,11 +147,9 @@ export class Cloud extends Container {
             }
             this.currentSprite = sprite;
 
-            console.log("add sprite with texture's key: ", texture)
             this.add(sprite);
 
             this.getAnimations(texture).forEach((d) => {
-                console.log("define: ", d.key);
 
                 this.scene.anims.create({
                     key: d.key,
@@ -183,7 +179,6 @@ export class Cloud extends Container {
 
     public setOptionText(choice: Choice) {
         this.dataChoice = choice;
-        console.log("setOptionText", choice)
 
         // const containerWidth = this.width;
         // const containerPaddingHor = 10;
@@ -242,7 +237,6 @@ export class Cloud extends Container {
                 console.error("ANIMS IS NOT DEFINED!!!");
                 return;
             }
-            console.log("play: ", texture + "-" + move);
             sprite.anims.play(texture + "-" + move, true);
         }
     }

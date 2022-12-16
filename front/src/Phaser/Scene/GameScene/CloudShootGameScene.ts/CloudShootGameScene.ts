@@ -36,8 +36,8 @@ export interface Rectangle {
 }
 
 export const SCENE_CONFIG = {
-    NUMBER_OF_ROUND: 2,
-    ROUND_DURATION: 15,
+    NUMBER_OF_ROUND: 3,
+    ROUND_DURATION: 25,
     BREAK_DURATION: 2,
 }
 
@@ -68,12 +68,16 @@ export class CloudShootGameScene extends Scene {
     // external
     private currentScore = 0;
 
+    private timeOutList: NodeJS.Timeout[] = []
+
 
 
     constructor() {
         super({
             key: CloudShootGameSceneName,
         });
+
+
     }
 
     init(data: any) {
@@ -81,16 +85,15 @@ export class CloudShootGameScene extends Scene {
     }
     // From the very start, let's preload images used in th e ReconnectingScene.
     preload() {
-
-
-
+        this.events.on('destroy', () => {
+            console.log("ON CLOUDSHOOT SCENE DESTROY")
+        })
 
         this.load.image("sky", skyBackground);
         this.load.image("background", background);
         this.load.image("ground", ground);
         this.load.image("star", star);
         this.load.image("game-ui", gameUi);
-
 
         this.load.image("bomb", bomb);
         this.load.spritesheet("dude", dude, {
@@ -130,14 +133,19 @@ export class CloudShootGameScene extends Scene {
     }
 
     restartCountDown() {
-        console.log("restartCountDown")
+        // console.log("restartCountDown")
         currentCountDown.set({
             duration: 20,
             startTime: Date.now()
         })
     }
 
+    onDestroy() {
+        console.log("ON CLOUDSHOOT SCENE DESTROY")
+    }
     create() {
+
+
 
         this.lastFired = Date.now() - 2000;
         this.input.keyboard.on('keydown-S', () => this.handleShootingKeyPress(), this);
@@ -215,18 +223,18 @@ export class CloudShootGameScene extends Scene {
         //     this
         // );
 
-        const bullets = this.player.getBullets();
+        // const bullets = this.player.getBullets();
 
-        if (bullets !== null && this.clouds !== null) {
-            // this.physics.add.collider
-            this.physics.add.overlap(
-                bullets,
-                this.clouds,
-                this.onBulletsHitClouds,
-                undefined,
-                this
-            );
-        }
+        // if (bullets !== null && this.clouds !== null) {
+        //     // this.physics.add.collider
+        //     this.physics.add.overlap(
+        //         bullets,
+        //         this.clouds,
+        //         this.onBulletsHitClouds,
+        //         undefined,
+        //         this
+        //     );
+        // }
 
         // this.startBackGround();
         this.initUIData();
@@ -237,6 +245,8 @@ export class CloudShootGameScene extends Scene {
         if (this.player) {
             const bullets = this.player.getBullets();
 
+            console.log("setUpOverlapBallAndCloud", { bullets: bullets.getLength(), clouds: this.clouds.length })
+
             if (bullets !== null && this.clouds !== null) {
                 // this.physics.add.collider
                 this.physics.add.overlap(
@@ -246,21 +256,19 @@ export class CloudShootGameScene extends Scene {
                     undefined,
                     this
                 );
-                console.log("SUCCESS RESET OVERLAP CLOUD AND BULLET!", { clouds: this.clouds });
+                // console.log("SUCCESS RESET OVERLAP CLOUD AND BULLET!", { clouds: this.clouds });
             } else {
-                console.log("FAIL RESET OVERLAP CLOUD AND BULLET!");
+                throw new Error("FAIL RESET OVERLAP CLOUD AND BULLET!")
             }
+        } else {
+            throw new Error("FAIL RESET OVERLAP CLOUD AND BULLET!")
         }
 
     }
 
     async randomlyPutCould(rect: Rectangle = { leftX: 100, rightX: 1500, topY: 100, bottomY: 350 }) {
-        // const test = new Cloud(this, 500, 500, `cloud1`);
-        // // test.playAnimation(CloudAnimationMove.WRONG)
-        // setTimeout(() => {
-        //     test.playAnimation(CloudAnimationMove.WRONG)
-        // }, 100)
-        // return
+        //  adjust rect
+        rect.rightX = Math.min(this.game.canvas.width - 50)
 
         //[todo] : efficiently put cloud in specific rect, for now put it fixed
         let preX = rect.leftX;
@@ -320,9 +328,8 @@ export class CloudShootGameScene extends Scene {
             }
         }
 
-        // /this.setUpOverlapBallAndCloud();
-
         this.putOptionToClouds();
+
     }
 
     putOptionToClouds() {
@@ -368,37 +375,42 @@ export class CloudShootGameScene extends Scene {
         this.clouds = [];
     }
 
-    async initQuestionData() {
-
-    }
-
     // BACKGROUND - INFINITE MOVING MANAGER
     async startTheGame() {
 
         let numberOfRound = SCENE_CONFIG.NUMBER_OF_ROUND;
 
-        await this.initQuestionData();
-
         await this.randomlyPutCould();
 
-        this.setUpOverlapBallAndCloud();
-        setTimeout(() => {
-            this.clearOldQuestion();
-        }, SCENE_CONFIG.ROUND_DURATION * 1000)
+        this.timeOutList.push(setTimeout(() => {
+            this.setUpOverlapBallAndCloud();
+        }, 500))
+
+        this.timeOutList.push(
+            setTimeout(() => {
+                this.clearOldQuestion();
+            }, SCENE_CONFIG.ROUND_DURATION * 1000)
+        )
 
         const gameRoundInterval = setInterval(async () => {
             numberOfRound--;
 
             await this.randomlyPutCould();
-            this.setUpOverlapBallAndCloud();
 
-            setTimeout(() => {
-                this.clearOldQuestion();
-                if (numberOfRound === 0) {
-                    clearInterval(gameRoundInterval);
-                    this.showGameResult()
-                }
-            }, SCENE_CONFIG.ROUND_DURATION * 1000)
+            this.timeOutList.push(setTimeout(() => {
+                this.setUpOverlapBallAndCloud.bind(this)();
+            }, 500))
+
+            this.timeOutList.push(
+                setTimeout(() => {
+                    this.clearOldQuestion();
+                    if (numberOfRound === 0) {
+                        clearInterval(gameRoundInterval);
+                        this.showGameResult()
+                    }
+                }, SCENE_CONFIG.ROUND_DURATION * 1000)
+            )
+
 
         }, SCENE_CONFIG.ROUND_DURATION * 1000 + SCENE_CONFIG.BREAK_DURATION * 1000)
     }
@@ -413,7 +425,7 @@ export class CloudShootGameScene extends Scene {
     update(time: number, delta: number): void {
 
         // this.input.keyboard.on('keydown-S', () => this.handleShootingKeyPress(time), this);
-
+        console.log("time", time)
 
         const arrow = this.player?.getArrow();
         if (arrow) {
@@ -474,6 +486,8 @@ export class CloudShootGameScene extends Scene {
             if (bullets && arrow && player) {
                 const bullet = bullets.get();
 
+                // this.setUpOverlapBallAndCloud()
+
                 if (bullet && arrow && player) {
                     // for debug: mark position star shooting
                     // this.add.image(player.x, player.y, "star");
@@ -481,6 +495,7 @@ export class CloudShootGameScene extends Scene {
                     // bullet.fire(this.arrow.x, this.arrow.y, this.arrow.x + 300, this.arrow.y - 300);
                     // this.lastFired = time;
                     console.log("Do sShooting ", time)
+                    console.log("bullet ", bullets.getLength())
                     bullet.fireToAngle(player.x, player.y, arrow.rotation);
                 }
 
@@ -509,16 +524,13 @@ export class CloudShootGameScene extends Scene {
 
         cloud.playAnimation(CloudAnimationMove.HIT);
 
-        console.log("onBulletsHitClouds")
         bullet.body.stop();
         bullet.setGravityY(-300);
 
+        // console.log("cloud", cloud)
+        // console.log("bullet", bullet)
 
-
-        console.log("cloud", cloud)
-        console.log("bullet", bullet)
-
-        console.log("cloud.dataChoice", cloud.dataChoice)
+        console.log(" onBulletsHitClouds cloud.dataChoice", cloud.dataChoice)
         if (!this.gameData) {
             throw new Error('Game data is undefined')
         }
@@ -536,30 +548,14 @@ export class CloudShootGameScene extends Scene {
                 }
             }
 
-            setTimeout(() => {
+            const PLAY_ANIMATION_TIME = 200;
+            this.timeOutList.push(setTimeout(() => {
                 cloud.destroy();
-            }, 200)
+            }, PLAY_ANIMATION_TIME))
+
         })
 
-        // cloud.getBody().stop();
-
-        //not thing happen
-        // bullet.setActive(false);
-        // cloud.setActive(false);
-
-        // bullet.disableBody(true, true);
-        // cloud.
-
     }
-}
 
 
-
-
-async function isCorrectOption(optionId: number): Promise<boolean> {
-    return new Promise((resolve, reject) => {
-        setTimeout(function () {
-            resolve(true);
-        }, 2000);
-    });
 }

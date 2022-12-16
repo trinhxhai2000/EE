@@ -27,7 +27,7 @@
 
     function logout() {
         authApi.logout().then((res) => {
-            console.log("logout response", res);
+            // console.log("logout response", res);
             if (res.success === true) {
                 flashStore.showSuccessFlash("Logout successful !");
             } else {

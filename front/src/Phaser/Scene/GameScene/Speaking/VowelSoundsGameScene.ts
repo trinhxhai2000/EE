@@ -24,7 +24,6 @@ export class VowelSoundsGameScene extends Scene {
 
     // From the very start, let's preload images used in th e ReconnectingScene.
     preload() {
-        console.log("preload function", skyBackground);
         this.load.image("sky", skyBackground);
         this.load.image("background", background);
         this.load.image("ground", ground);
@@ -122,7 +121,6 @@ export class VowelSoundsGameScene extends Scene {
         // if()
 
         let cursors = this.input.keyboard.createCursorKeys();
-        console.log("update function");
         if (cursors.left.isDown) {
             this.player.setVelocityX(-160);
             this.player.anims.play("left", true);

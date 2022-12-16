@@ -2,4 +2,4 @@
 
 export const API_URL = "http://localhost:3000/api/v1";
 
-console.log("API_URL", API_URL);
+// console.log("API_URL", API_URL);

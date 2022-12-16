@@ -10,17 +10,17 @@
 
     const unsubscribe = userSession.subscribe(async (value) => {
         if (value === null) {
-            console.log("currentUser.subscribe value", value);
+            // console.log("currentUser.subscribe value", value);
             try {
                 const result = await authApi.getLoginUser();
 
-                console.log(
-                    "currentUser.subscribe getLoginUser result",
-                    result
-                );
+                // console.log(
+                //     "currentUser.subscribe getLoginUser result",
+                //     result
+                // );
 
                 if (!result.success) {
-                    console.log("navigate to login");
+                    // console.log("navigate to login");
                 }
             } catch (error) {}
         }
@@ -31,13 +31,13 @@
             try {
                 const result = await authApi.getLoginUser();
 
-                console.log(
-                    "currentUser.subscribe getLoginUser result",
-                    result
-                );
+                // console.log(
+                //     "currentUser.subscribe getLoginUser result",
+                //     result
+                // );
 
                 if (!result.success) {
-                    console.log("navigate to login");
+                    // console.log("navigate to login");
                 }
             } catch (error) {}
         }

@@ -7,6 +7,7 @@
     import iconClose from "../images/icon/icon-close.png";
     import iconPlay from "../images/icon/icon-play.png";
     import iconBack from "../images/icon/icon-back.png";
+    import iconSetting from "../images/icon/icon-setting.png";
 
     import {
         currentScore,
@@ -22,6 +23,10 @@
     import { ErrorMessage } from "../../api/ErrorMessage";
     import { get } from "svelte/store";
     import { currentGameStore } from "../../Stores/CurrentGameSceneStore";
+    import {
+        componentModalStore,
+        ComponentModalType,
+    } from "../../Stores/ComponentModal";
 
     export let game: Phaser.Game | undefined;
 
@@ -33,7 +38,7 @@
 
     onMount(() => {
         currentScore.set(0);
-        console.log("currentCountDown", $currentCountDown);
+        // console.log("currentCountDown", $currentCountDown);
     });
 
     const unsubcriber = currentCountDown.subscribe((val) => {
@@ -74,7 +79,7 @@
                     // gameManager.startSceneByGame(game, VowelSoundsGameSceneName);
                 } catch (err) {
                     isStartGame.set(false);
-                    console.log("startScene err", err);
+                    // console.log("startScene err", err);
                 }
             })
             .finally(() => {
@@ -136,6 +141,9 @@
     function onClickBackMain() {
         currentGameStore.set(null);
     }
+    function onClickSetting() {
+        componentModalStore.showComponentModal(ComponentModalType.SETTING);
+    }
 
     // console.log("FINAL fuck this sjet");
     //[todo]: Time formater
@@ -148,6 +156,9 @@
         <div class="start-layout">
             <div class="back-main-button" on:click={onClickBackMain}>
                 <img src={iconBack} alt="icon-back" />
+            </div>
+            <div class="setting-button" on:click={onClickSetting}>
+                <img src={iconSetting} alt="icon-setting" />
             </div>
             <div class="pre-game-content">
                 <div class="btn play-button" on:click={startTheGame}>
@@ -221,7 +232,6 @@
         position: absolute;
 
         @include debugCloudShootLayout(10px, blue);
-        padding: 10px;
 
         width: 100%;
         height: 100%;
@@ -237,6 +247,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            background-color: white;
             .pre-game-content {
                 display: flex;
                 justify-content: center;
@@ -298,6 +309,8 @@
     $p-score-w: 200px;
     $p-score-h: 80px;
 
+    $padding: 10px;
+
     @mixin grey-trans-bg {
         background-color: rgba(black, 0.6);
         color: white;
@@ -309,7 +322,7 @@
         width: $p-time-w;
         height: $p-time-h;
         position: absolute;
-        top: 0;
+        top: $padding;
         left: calc(50% - $p-time-w / 2);
         display: flex;
         justify-content: center;
@@ -323,6 +336,8 @@
         width: 68px;
         height: 68px;
         padding: 10px;
+        margin-top: $padding;
+        margin-left: $padding;
         border-radius: 50%;
         box-shadow: 2px 2px 2px 2px rgba(black, 0.2);
         transition: 0.12s;
@@ -336,11 +351,13 @@
             transform: scale(1.12);
         }
     }
+    $button-size: 68px;
+    .setting-button,
     .back-main-button {
         pointer-events: auto;
         position: absolute;
-        top: 0;
-        left: 10px;
+        top: $padding;
+        left: $padding;
         background-color: white;
         border: 4px solid $primary-color;
         width: 68px;
@@ -359,6 +376,9 @@
             transform: scale(1.12);
         }
     }
+    .setting-button {
+        top: $button-size + 20px;
+    }
     .score-panel {
         @include grey-trans-bg();
         border-radius: 5px;
@@ -366,8 +386,8 @@
         position: absolute;
         width: $p-score-w;
         height: $p-score-h;
-        right: 0;
-        top: 0;
+        right: $padding;
+        top: $padding;
 
         display: flex;
         justify-content: center;
@@ -378,10 +398,10 @@
 
     .question-modal {
         height: auto;
-        width: 100%;
+        width: calc(100% - $padding * 2);
         position: absolute;
-        top: max($p-time-h, $p-score-h) + 10px;
-
+        top: max($p-time-h + $padding, $p-score-h + $padding) + 10px;
+        left: $padding;
         /* padding-left: 10%; */
         /* display: flex; */
         /* justify-content: center; */

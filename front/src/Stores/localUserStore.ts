@@ -4,6 +4,7 @@ const gameQualityKey = "gameQuality";
 const audioPlayerVolumeKey = "audioVolume";
 const audioPlayerMuteKey = "audioMute";
 const gameSoundMuteKey = "gameSoundMute";
+const gameResolutionKey = "gameResolution";
 const gameSoundVolumeKey = "gameSoundVolume";
 
 const authToken = "authToken";
@@ -56,6 +57,12 @@ class LocalUserStore {
         return localStorage.getItem(gameSoundMuteKey) === "true";
     }
 
+    setGameResolution(value: string): void {
+        localStorage.setItem(gameResolutionKey, value.toString());
+    }
+    getGameResolution(): string {
+        return localStorage.getItem(gameResolutionKey) || "";
+    }
 
     setAuthToken(value: string | null) {
         value ? localStorage.setItem(authToken, value) : localStorage.removeItem(authToken);

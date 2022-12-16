@@ -48,7 +48,7 @@
 
         waitAdding = true;
         waitingModalStore.set("Loading ... ");
-        console.log("update", { id, txtDescription, isAnswer });
+        // console.log("update", { id, txtDescription, isAnswer });
         choiceApi
             .update(id, txtDescription, isAnswer)
             .then((res) => {
@@ -71,7 +71,6 @@
     }
 
     function closeAddingModal() {
-        console.log("closeAddingModal");
         componentModalStore.closeComponentModal();
     }
 </script>

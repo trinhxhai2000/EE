@@ -52,7 +52,6 @@ export class Player extends Container {
         // this,ad
 
 
-        console.log("preload sjetttttt")
         this.scene.load.spritesheet("dude", dude, {
             frameWidth: 32,
             frameHeight: 48,
@@ -94,11 +93,19 @@ export class Player extends Container {
 
 
 
+
         this.bullets = this.scene.physics.add.group({
             classType: Bullet,
-            maxSize: 10000,
+            quantity: 500,
+            maxSize: 500,
+            active: true,
+            max: 0,
             runChildUpdate: true
         });
+
+        // for (let i = 0; i < 200; i++) {
+        //     this.bullets.get();
+        // }
 
         // lay
         const playerTexturePromise = lazyLoadPlayerCharacterTextures(scene.load, ['dude']);
@@ -213,7 +220,6 @@ export class Player extends Container {
             sprite.setDepth(1);
 
             if (texture == 'arrow') {
-                console.log("set arrow sprites");
                 this.arrow = sprite;
                 this.arrow.setScale(0.8);
             }

@@ -71,7 +71,6 @@
         userApi
             .update(editingUser.username, txtPassword, editingUser.role)
             .then((res) => {
-                console.log("sjet userApi.update res", res);
                 if (res.success) {
                     flashStore.showSuccessFlash("Successfully updated !");
                 } else {

@@ -83,7 +83,6 @@
     let currentPage: ADMIN_PAGES = get(currentAdminPage) ?? ADMIN_PAGES.USER;
 
     function onChangePage(e: Event) {
-        console.log("currentPage", currentPage);
         currentAdminPage.set(currentPage);
     }
 

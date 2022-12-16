@@ -16,7 +16,7 @@ export class HdpiManager {
         private minRecommendedGamePixelsNumber: number,
         private absoluteMinPixelNumber: number,
         private forceUsingRealSize: boolean = false
-    ) {}
+    ) { }
 
     /**
      * Returns the optimal size in "game pixels" based on the screen size in "real pixels".
@@ -30,7 +30,7 @@ export class HdpiManager {
     public getOptimalGameSize(realPixelScreenSize: Size): { game: Size; real: Size } {
         const realPixelNumber = realPixelScreenSize.width * realPixelScreenSize.height;
         // If the screen has not a definition small enough to match the minimum number of pixels we want to display,
-        // let's make the canvas the size of the screen (in real pixels)
+        // let's make the canvas the size the screen (in real pixels)
         if (this.forceUsingRealSize || realPixelNumber <= this.minRecommendedGamePixelsNumber) {
             return {
                 game: realPixelScreenSize,
@@ -119,3 +119,4 @@ export class HdpiManager {
         this._zoomModifier = zoomModifier;
     }
 }
+export const hdpiManager = new HdpiManager(640 * 480, 196 * 196);
