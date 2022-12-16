@@ -7,6 +7,8 @@ import "./controllers/TaskController";
 import "./controllers/QuestionController";
 import "./controllers/UserController";
 import "./controllers/ChoiceController";
+import "./controllers/CloudShootController";
+
 import { errorHandlerMiddleware } from "./middlewares/errorHandler";
 import "reflect-metadata";
 
@@ -15,6 +17,7 @@ dotenv.config();
 import cookieParser from "cookie-parser";
 import { appDataSource } from "./db/data-source";
 import { userRepositoryController } from "./db/repository/UserRepository";
+import { seedQuestionData } from "./SeedingData";
 
 const app = express();
 app.use(express.urlencoded({ extended: true }));
@@ -38,10 +41,13 @@ const start = async () => {
             .then(() => {
                 // here you can start to work with your database
                 console.log("Success initialize AppDataSource");
+
             })
             .catch((error) => console.log(error));
 
         await userRepositoryController.init();
+
+        // await seedData();
 
         app.listen(port, () => {
             console.log(`app is listening on port ${port}`);
@@ -52,3 +58,5 @@ const start = async () => {
 };
 
 start();
+
+

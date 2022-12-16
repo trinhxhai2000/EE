@@ -106,6 +106,10 @@ export class UserRepositoryController {
         return cnt;
     }
 
+    public async deleteAll(): Promise<void> {
+        return await this._userRepository.clear();
+    }
+
 
 
     // public async findUserByWalletAddress(

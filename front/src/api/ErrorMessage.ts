@@ -3,7 +3,8 @@ export class ErrorMessage {
 }
 
 export class CommonMessage {
-    public static SUCCESS_DELETED = "Successful deleted !";
-    public static SUCCESS_ADDED = "Successful added !";
-    public static SUCCESS_UPDATED = "Successful updated !";
+    public static SUCCESS_DELETED = "Successful deleted!";
+    public static SUCCESS_ADDED = "Successful added!";
+    public static SUCCESS_UPDATED = "Successful updated!";
+    public static SUCCESS_SAVED = "Successful saved!";
 }

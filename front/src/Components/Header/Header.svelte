@@ -4,6 +4,12 @@
     import ProfileButton from "../ProfileButton/ProfileButton.svelte";
     import { navigate } from "svelte-routing";
     import { headerData, headerDataStore } from "../../Stores/HeaderStore";
+    import iconSetting from "../images/icon/icon-setting.png";
+    import {
+        componentModalStore,
+        ComponentModalType,
+    } from "../../Stores/ComponentModal";
+
     function onClickLogo() {
         navigate("/");
     }
@@ -11,8 +17,13 @@
     function onClickLeaderBoard() {
         navigate("/");
     }
+
     function onClickLogin() {
         navigate("/login");
+    }
+
+    function onClickSetting() {
+        componentModalStore.showComponentModal(ComponentModalType.SETTING);
     }
 </script>
 
@@ -41,6 +52,9 @@
         {:else}
             <div class="raw-btn" on:click={onClickLogin}>Login</div>
         {/if}
+        <div class="btn-effect setting-btn" on:click={onClickSetting}>
+            <img src={iconSetting} alt="" />
+        </div>
     </div>
 </div>
 
@@ -115,6 +129,19 @@
         display: flex;
         justify-content: center;
         align-items: center;
+        .setting-btn {
+            height: $header-height - 40px;
+            margin-left: 15px;
+            &:hover {
+                /* transition: tran; */
+                /* transform: rotate(20deg) scale(1.12); */
+            }
+            img {
+                display: block;
+                max-width: 100%;
+                max-height: 100%;
+            }
+        }
     }
 
     .user-profile-wrapper {

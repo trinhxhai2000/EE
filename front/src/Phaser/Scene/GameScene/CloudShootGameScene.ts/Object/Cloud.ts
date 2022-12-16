@@ -33,13 +33,14 @@ import { CLOUD_RESOURCES, type BodyResourceDescriptionInterface } from "../../..
 import { lazyLoadPlayerCharacterTextures } from "../../../../Entity/PlayerTexturesLoadingManager";
 import { PlayerAnimationDirections } from "../../../../Player/Animation";
 import { GAME_CONFIG } from "../../../../../main";
-import type { Option } from "../../../../../interface/entity/Option";
+import type { Choice } from "../../../../../interface/entity/Choice";
 
 export class Cloud extends Container {
     public id: string;
+    public choiceId: number | undefined;
     public objectSprites: Map<string, Sprite>;
     public currentTexture: string = "";
-    public dataOption: Option | null = null;
+    public dataChoice: Choice | null = null;
     currentSprite: Sprite | null = null;
     public isReady = false;
 
@@ -180,14 +181,14 @@ export class Cloud extends Container {
     //     }
     // }
 
-    public setOptionText(option: Option) {
-        this.dataOption = option;
-        console.log("setOptionText", option)
+    public setOptionText(choice: Choice) {
+        this.dataChoice = choice;
+        console.log("setOptionText", choice)
 
         // const containerWidth = this.width;
         // const containerPaddingHor = 10;
 
-        let text = option.description;
+        let text = choice.description;
         const fontSize = 20;
 
         const content = this.scene.add.bitmapText(0, 0, 'LilitaOne', text, fontSize)
@@ -259,7 +260,7 @@ export class Cloud extends Container {
         body.setVelocity(x, y);
     }
     public destroy(fromScene?: boolean | undefined): void {
-        this.currentSprite?.destroy(fromScene);
+        // this.currentSprite?.destroy(fromScene);
         super.destroy(fromScene)
     }
 }

@@ -1,4 +1,4 @@
-export interface Option {
+export interface Choice {
     id: number
     description: string
     createdDate?: Date

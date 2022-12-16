@@ -10,6 +10,10 @@ export interface CommonResponse {
     data?: any;
 }
 
+export interface DataResponse<T> {
+    success: boolean;
+    data?: T;
+}
 
 
 export interface GetAllResponse<T> {

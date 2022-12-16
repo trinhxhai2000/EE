@@ -6,7 +6,7 @@ export class Submission {
     id: number
 
     @Column()
-    historyId: number
+    recordId: number
 
     @Column()
     choiceId: number

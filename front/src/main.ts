@@ -15,6 +15,7 @@ import { SelectMapScene } from "./Phaser/Scene/SelectMapScene";
 import { VowelSoundsGameScene } from "./Phaser/Scene/GameScene/Speaking/VowelSoundsGameScene";
 import { GameManager, gameManager } from "./Phaser/Game/GameManager";
 import { CloudShootGameScene } from "./Phaser/Scene/GameScene/CloudShootGameScene.ts/CloudShootGameScene";
+import { HdpiManager } from "./Utils/HdpiManager";
 
 // import dotnet from "dotenv";
 // dotnet.config({ path: __dirname + '/.env' })
@@ -24,6 +25,14 @@ console.log("w window.screen.innerHeight", window.innerHeight);
 console.log("w window.screen.innerWidth", window.innerWidth);
 gameSizeManager.setSize(window.innerHeight, window.innerWidth);
 
+
+const { width, height } = {
+    width: window.innerWidth,
+    height: window.innerHeight,
+};
+const hdpiManager = new HdpiManager(640 * 480, 196 * 196);
+const { game: gameSize, real: realSize } = hdpiManager.getOptimalGameSize({ width, height });
+console.log("getOptimalGameSize", { game: gameSize, real: realSize })
 
 export const GAME_CONFIG: GameConfig = {
     type: Phaser.CANVAS,

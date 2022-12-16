@@ -1,8 +1,8 @@
-import type { Option } from "./Option"
+import type { Choice } from "./Choice"
 export interface Question {
     id: number
     description: string
     createdDate?: Date
     updateDate?: Date
-    options: Option[],
+    choices: Choice[],
 }

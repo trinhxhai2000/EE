@@ -6,6 +6,7 @@
     } from "../../Stores/ComponentModal";
     import AddChoiceModal from "../Admin/Question/Choice/AddChoiceModal.svelte";
     import EditChoiceModal from "../Admin/Question/Choice/EditChoiceModal.svelte";
+    import SettingModal from "../SettingModal/SettingModal.svelte";
 
     let app: HTMLElement | null = null;
 
@@ -46,6 +47,10 @@
 
         {#if $currentComponentModalStore === ComponentModalType.EDIT_CHOICE}
             <EditChoiceModal />
+        {/if}
+
+        {#if $currentComponentModalStore === ComponentModalType.SETTING}
+            <SettingModal />
         {/if}
     </div>
 </div>

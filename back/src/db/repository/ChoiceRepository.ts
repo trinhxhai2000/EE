@@ -26,9 +26,7 @@ export class ChoiceRepositoryController {
         return choice;
     }
     public async getAll(questionId: number): Promise<Choice[]> {
-        return this._repository.createQueryBuilder("choice")
-            .where(`choice.questionId = ${questionId}`)
-            .getMany();
+        return this._repository.findBy({ questionId });
 
     }
 
@@ -43,7 +41,9 @@ export class ChoiceRepositoryController {
     public async delete(id: number): Promise<DeleteResult> {
         return await this._repository.delete({ id });
     }
-
+    public async deleteAll(): Promise<void> {
+        return await this._repository.clear();
+    }
     public async deleteMany(ids: number[]): Promise<DeleteResult> {
         return await this._repository.delete(ids)
     }

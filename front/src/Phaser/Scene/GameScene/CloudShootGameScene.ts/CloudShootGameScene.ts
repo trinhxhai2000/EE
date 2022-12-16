@@ -10,25 +10,23 @@ import bomb from "/game-objects/bomb.png";
 import ground from "/game-objects/platform.png";
 import dude from "/game-characters/dude.png";
 
-
 import gameUi from "/game-objects/game-ui.png";
 
 
 import arrow from "/game-objects/arrow.png";
 import bullet from "/game-objects/ball.png";
-import { Bullet } from "./Object/Bullet";
 import { Player } from "./Object/Player";
-import { lazyLoadPlayerCharacterTextures } from "../../../Entity/PlayerTexturesLoadingManager";
 import { PlayerAnimationDirections } from "../../../Player/Animation";
 import type { Question } from "../../../../interface/entity/Question";
 import { CommonUtils } from "../../../../Utils/CommonUtils";
-import type { Option } from "../../../../interface/entity/Option";
+import type { Choice } from "../../../../interface/entity/Choice";
 import { Cloud, CloudAnimationMove } from "./Object/Cloud";
-import { CLOUD_RESOURCES } from "../../../Entity/PlayerTextures";
 
 import { currentScore, currentCountDown, currentQuestion, isStartGame } from "../../../../Stores/GameActionStore/CloudShootGameStore";
-import { GAME_CONFIG } from "../../../../main";
-import { infoModalStore } from "../../../../Stores/ModalStore";
+import { infoModalStore, waitingModalStore } from "../../../../Stores/ModalStore";
+import type { QuestionData, StartGameData } from "../../../../interface/api/CloudShootPlayData";
+import { cloudShootApi } from "../../../../api/CloudShootApi";
+
 
 export interface Rectangle {
     leftX: number,
@@ -41,6 +39,10 @@ export const SCENE_CONFIG = {
     NUMBER_OF_ROUND: 2,
     ROUND_DURATION: 15,
     BREAK_DURATION: 2,
+}
+
+export enum CLOUD_SHOOT_EVENT {
+    FINISHED_LOAD_QUESTION = 'FINISHED_LOAD_QUESTION',
 }
 
 export class CloudShootGameScene extends Scene {
@@ -61,20 +63,28 @@ export class CloudShootGameScene extends Scene {
     // question
     private currentQuestionIndex = 0;
 
+    private gameData: StartGameData | undefined;
 
     // external
     private currentScore = 0;
+
 
 
     constructor() {
         super({
             key: CloudShootGameSceneName,
         });
-
     }
 
+    init(data: any) {
+        this.gameData = data as StartGameData;
+    }
     // From the very start, let's preload images used in th e ReconnectingScene.
     preload() {
+
+
+
+
         this.load.image("sky", skyBackground);
         this.load.image("background", background);
         this.load.image("ground", ground);
@@ -100,12 +110,25 @@ export class CloudShootGameScene extends Scene {
 
         this.load.bitmapFont('gothic', 'assets/font/bitmap/gothic.png', 'assets/font/bitmap/gothic.xml');
         this.load.bitmapFont('LilitaOne', 'assets/font/bitmap/LilitaOne.png', 'assets/font/bitmap/LilitaOne.xml');
+
+
+        this.addLoader();
     }
 
+    addLoader() {
+        // this.load.on("progress", (value: number) => {
+        //     this.drawProgress();
+        // });
+        waitingModalStore.set('Loading resources...')
+        this.load.on("complete", () => {
+            waitingModalStore.set('')
+        });
+    }
 
     initUIData() {
         this.restartCountDown();
     }
+
     restartCountDown() {
         console.log("restartCountDown")
         currentCountDown.set({
@@ -129,7 +152,6 @@ export class CloudShootGameScene extends Scene {
         bg.setOrigin(0, 0);
 
         this.platforms = this.physics.add.staticGroup();
-
 
         // const gameUI = this.add.image(0, 0, "game-ui");
         // const ratio = Math.min(this.canvas.height / gameUI.height, this.canvas.width / gameUI.width)
@@ -159,15 +181,9 @@ export class CloudShootGameScene extends Scene {
 
         /* #endregion */
 
-
         this.cursors = this.input.keyboard.createCursorKeys();
 
-
-
-
         this.player = new Player(this, 100, 100);
-
-
 
         // .sprite(400, 300, 'arrow');
         if (arrow === null) {
@@ -198,8 +214,6 @@ export class CloudShootGameScene extends Scene {
         //     undefined,
         //     this
         // );
-
-
 
         const bullets = this.player.getBullets();
 
@@ -272,6 +286,7 @@ export class CloudShootGameScene extends Scene {
             if (curCloud === null) {
                 throw new Error(`Can't create clouds`)
             }
+
             const width = curCloud.width;
             const height = curCloud.height;
 
@@ -317,14 +332,16 @@ export class CloudShootGameScene extends Scene {
         if (nClouds == 0) {
             throw Error('There is no cloud to put options')
         }
+        if (!this.gameData) {
+            throw new Error('Game data is undefined')
+        }
 
-        const question = LIST_QUEST[this.currentQuestionIndex];
+        const question = this.gameData.questions[this.currentQuestionIndex];
         this.putQuestionDataToUI(question);
-        const options = question.options;
-        console.log("QUESSSTION", question)
+        const choices = question.choices;
         let curOptionsIdx = 0;
         for (const cloud of clouds) {
-            const opt = options[curOptionsIdx++];
+            const opt = choices[curOptionsIdx++];
             cloud.setOptionText(opt);
             // break
         }
@@ -351,12 +368,19 @@ export class CloudShootGameScene extends Scene {
         this.clouds = [];
     }
 
+    async initQuestionData() {
+
+    }
+
     // BACKGROUND - INFINITE MOVING MANAGER
     async startTheGame() {
 
         let numberOfRound = SCENE_CONFIG.NUMBER_OF_ROUND;
 
+        await this.initQuestionData();
+
         await this.randomlyPutCould();
+
         this.setUpOverlapBallAndCloud();
         setTimeout(() => {
             this.clearOldQuestion();
@@ -475,7 +499,7 @@ export class CloudShootGameScene extends Scene {
         // onBulletsHitClouds(cloud: Cloud, bullet: Bullet) {
         // bullet.destroy();
         // cloud.destroy();
-        // console.log("cloud", cloud)
+
 
         if (this.markOverLap.get(cloud.currentTexture)) {
             return
@@ -490,21 +514,28 @@ export class CloudShootGameScene extends Scene {
         bullet.setGravityY(-300);
 
 
-        isCorrectOption(1).then((isAnswer) => {
 
-            const rand = Math.floor(Math.random() * 3);
-            console.log("Rand", rand)
-            if (rand === 0) {
-                bullet.destroy();
-                cloud.playAnimation(CloudAnimationMove.CORRECT);
-                this.increaseUIScore()
+        console.log("cloud", cloud)
+        console.log("bullet", bullet)
 
+        console.log("cloud.dataChoice", cloud.dataChoice)
+        if (!this.gameData) {
+            throw new Error('Game data is undefined')
+        }
+        cloudShootApi.sendChoice(this.gameData.recordId, cloud.dataChoice.id).then((res) => {
+            if (res.success) {
+                if (res.data.isAnswer) {
+                    bullet.destroy();
+                    cloud.playAnimation(CloudAnimationMove.CORRECT);
+                    this.increaseUIScore()
 
-            } else {
-                bullet.destroy();
-                cloud.playAnimation(CloudAnimationMove.WRONG);
-                this.markOverLap.set(cloud.currentTexture, false);
+                } else {
+                    bullet.destroy();
+                    cloud.playAnimation(CloudAnimationMove.WRONG);
+                    this.markOverLap.set(cloud.currentTexture, false);
+                }
             }
+
             setTimeout(() => {
                 cloud.destroy();
             }, 200)
@@ -523,74 +554,12 @@ export class CloudShootGameScene extends Scene {
 }
 
 
-// OTHER BUSSINESS
-let mapAnswer = new Map<number, boolean>();
-const LIST_QUEST: Question[] = ListQuestionGenerator();
-
-
-function ListQuestionGenerator(): Question[] {
-    let result: Question[] = [];
-
-    let currentOptionId = 1;
-    const charList = ['A'];
-    for (let i = 1; i < 26; i++) {
-        var chr = String.fromCharCode(65 + i)
-        charList.push(chr);
-    }
-
-    const numberOfAnswer = 6;
-
-    for (let i = 0; i < 20; i++) {
-        const question: Question = {
-            id: i + 1,
-            description: '',
-            options: []
-        }
-        // just make a copy
-        const cloneCharList = charList.slice();
-        CommonUtils.shuffle<string>(cloneCharList);
-
-
-        question.description = `Choose ${cloneCharList.slice(0, numberOfAnswer).join(', ')} !!`;
-
-
-        for (let j = 0; j < numberOfAnswer; j++) {
-            mapAnswer.set(currentOptionId, true);
-            const option: Option = {
-                id: currentOptionId++,
-                description: `${cloneCharList[j]}. 1234`,
-            }
-            question.options.push(option);
-        }
-
-        for (let j = numberOfAnswer; j < cloneCharList.length; j++) {
-            mapAnswer.set(currentOptionId, false);
-            const option: Option = {
-                id: currentOptionId++,
-                description: `${cloneCharList[j]}. 1234`,
-            }
-            question.options.push(option);
-        }
-
-        result.push(question);
-    }
-
-    result = CommonUtils.shuffle(result);
-    console.log("gen question result:", result)
-
-    // !!!!!
-    return result;
-}
 
 
 async function isCorrectOption(optionId: number): Promise<boolean> {
     return new Promise((resolve, reject) => {
         setTimeout(function () {
-            if (mapAnswer.get(optionId)) {
-                resolve(true);
-            } else {
-                resolve(false);
-            }
+            resolve(true);
         }, 2000);
     });
 }

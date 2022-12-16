@@ -1,8 +1,10 @@
 import { writable } from "svelte/store";
 
 export enum ComponentModalType {
+    SETTING,
     ADD_CHOICE,
-    EDIT_CHOICE
+    EDIT_CHOICE,
+
 }
 
 export const currentComponentModalStore = writable<ComponentModalType | null>(

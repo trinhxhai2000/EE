@@ -35,6 +35,9 @@ export class QuestionRepositoryController {
     public async deleteMany(ids: number[]): Promise<DeleteResult> {
         return await this._repository.delete(ids)
     }
+    public async deleteAll(): Promise<void> {
+        return await this._repository.clear();
+    }
 
     public async paging(from: number, to: number, search: string): Promise<Question[]> {
         return this._repository.createQueryBuilder("question")
