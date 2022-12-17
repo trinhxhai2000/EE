@@ -44,8 +44,9 @@ export class GameManager {
         }
 
 
-
+        gameScene.scene.restart();
         gameScene.scene.start(sceneName, data);
+
     }
 
     public stopScene(sceneName: string) {
@@ -75,7 +76,10 @@ export class GameManager {
             );
         }
 
-        gameScene.scene.stop()
+        // gameScene.scene.restart()
+        gameScene.scene.restart()
+
+
     }
 
     // public startSceneByGame(game: Phaser.Game, sceneName: string) {

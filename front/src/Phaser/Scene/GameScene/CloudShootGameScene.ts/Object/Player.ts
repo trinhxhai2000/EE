@@ -172,6 +172,19 @@ export class Player extends Container {
 
     }
 
+    public resetBullets() {
+        this.bullets?.destroy(true)
+        this.bullets = this.scene.physics.add.group({
+            classType: Bullet,
+            quantity: 50,
+            maxSize: 50,
+            active: true,
+            max: 0,
+            runChildUpdate: true
+        });
+
+    }
+
     public addPlayerTextures(textures: string[], frame?: string | number): void {
         if (textures.length < 1) {
             throw new Error("no texture given");
